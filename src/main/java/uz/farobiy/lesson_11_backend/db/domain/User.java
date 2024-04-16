@@ -19,11 +19,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users")
+@Entity(name ="users")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(generator = "uuid2")
