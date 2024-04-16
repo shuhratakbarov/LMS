@@ -33,7 +33,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
 
 
-    @Query(value = "select a from User a where a.role.id=:roleId")
+    @Query(value = "select a from users a where a.role.id=:roleId")
     Page<User> findAllByRoleId(@Param("roleId") Long roleId, Pageable pageable);
 
     @Query(value = "select * from users u where u.role_id=:roleId and u.active IS TRUE ",nativeQuery = true)
@@ -44,16 +44,16 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
 
 
-    @Query(value = "select new map(a.id as id, a.username as username) from User a where a.role.id=2 and a.active")
+    @Query(value = "select new map(a.id as id, a.username as username) from users a where a.role.id=2 and a.active")
     List<Map<String, Object>> findTeachersForSelect();
 
 
 
 
-    @Query("SELECT c FROM User c WHERE LOWER(CONCAT(c.id, c.firstName, c.lastName,c.username,c.phone)) LIKE LOWER(CONCAT('%', :searching, '%')) and c.role.id=:roleId and c.active=:isActive")
+    @Query("SELECT c FROM users c WHERE LOWER(CONCAT(c.id, c.firstName, c.lastName,c.username,c.phone)) LIKE LOWER(CONCAT('%', :searching, '%')) and c.role.id=:roleId and c.active=:isActive")
     Page<User> searchInRoleId(@Param("searching") String searching, @Param("roleId") Long roleId,@Param("isActive") boolean isActive, Pageable pageable);
 
-    @Query("SELECT c FROM User c WHERE LOWER(CONCAT(c.id, c.firstName, c.lastName,c.username,c.phone)) LIKE LOWER(CONCAT('%', :searching, '%')) and c.role.id=:roleId ")
+    @Query("SELECT c FROM users c WHERE LOWER(CONCAT(c.id, c.firstName, c.lastName,c.username,c.phone)) LIKE LOWER(CONCAT('%', :searching, '%')) and c.role.id=:roleId ")
     Page<User> searchInRoleIdAll(@Param("searching") String searching, @Param("roleId") Long roleId, Pageable pageable);
 
 
