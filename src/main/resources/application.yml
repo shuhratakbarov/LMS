@@ -14,7 +14,7 @@ spring:
     generate-ddl: true
     properties:
       hibernate:
-#        dialect: org.hibernate.dialect.PostgreSQLDialect
+        #        dialect: org.hibernate.dialect.PostgreSQLDialect
         enable_lazy_load_no_trans: true
   servlet:
     multipart:
