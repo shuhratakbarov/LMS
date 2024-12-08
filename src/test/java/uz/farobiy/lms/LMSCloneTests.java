@@ -1,4 +1,4 @@
-package uz.farobiy.lms;
+package uz.shuhrat.lms;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
