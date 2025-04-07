@@ -13,5 +13,5 @@ public interface TaskService {
 
     ResponseDto<?> deleteTask(UUID taskId) throws Exception;
 
-    ResponseDto<?> findAllWithFiles(Long groupId) throws Exception;
+    ResponseDto<?> findAllWithFiles(Long groupId);
 }

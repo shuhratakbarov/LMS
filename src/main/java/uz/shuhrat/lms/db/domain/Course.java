@@ -24,7 +24,7 @@ public class Course {
     private String description;
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private Date createAt;
+    private Date createdAt;
     @UpdateTimestamp
-    private Date updateAt;
+    private Date updatedAt;
 }

@@ -5,9 +5,10 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.sql.Date;
 import java.util.UUID;
 
 @Entity
@@ -21,9 +22,6 @@ public class Homework {
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
-    @Column(nullable = false, updatable = false)
-    @CreationTimestamp
-    private Date createAt;
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id")
@@ -40,4 +38,9 @@ public class Homework {
     private BigDecimal ball;
     @Column
     private String description;
+    @Column(nullable = false, updatable = false)
+    @CreationTimestamp
+    private Date createdAt;
+    @UpdateTimestamp
+    private Date updatedAt;
 }

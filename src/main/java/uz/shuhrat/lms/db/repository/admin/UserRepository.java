@@ -25,21 +25,12 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query(value = "SELECT COUNT(*) FROM group_student WHERE group_id = :id ", nativeQuery = true)
     Optional<Long> countStudentsByGroupId(@Param("id") Long id);
 
-    @Query(value = "select * from users u where u.role_id=:roleId", nativeQuery = true)
-    Page<User> findAllByRoleId(@Param("roleId") Long roleId, Pageable pageable);
-
-    @Query(value = "select * from users u where u.role_id = :roleId and u.active IS TRUE ", nativeQuery = true)
-    Page<User> findAllByRoleIdAndActive(@Param("roleId") Long roleId, Pageable pageable);
-
-    @Query(value = "select * from users u where u.role_id = :roleId and u.active IS FALSE ", nativeQuery = true)
-    Page<User> findAllByRoleIdAndNotActive(@Param("roleId") Long roleId, Pageable pageable);
-
     @Query(value = "select u.id, u.username from users u where u.role_id = 2 and u.active", nativeQuery = true)
     List<Map<String, Object>> findTeachersForSelect();
 
-    @Query("SELECT u FROM User u WHERE LOWER(CONCAT(u.id, u.firstName, u.lastName, u.username, u.phone)) LIKE LOWER(CONCAT('%', :searching, '%')) and u.role.id=:roleId and u.active=:isActive ")
-    Page<User> searchInRoleId(@Param("searching") String searching, @Param("roleId") Long roleId, @Param("isActive") boolean isActive, Pageable pageable);
+    @Query(value = "select * from users u where u.role_id=:roleId", nativeQuery = true)
+    Page<User> findAllByRoleId(@Param("roleId") Long roleId, Pageable pageable);
 
-    @Query("SELECT u FROM User u WHERE LOWER(CONCAT(u.id, u.firstName, u.lastName, u.username, u.phone)) LIKE LOWER(CONCAT('%', :searching, '%')) and u.role.id=:roleId ")
-    Page<User> searchInRoleIdAll(@Param("searching") String searching, @Param("roleId") Long roleId, Pageable pageable);
+    @Query("SELECT u FROM User u WHERE u.role.id=:roleId and LOWER(CONCAT(u.id, u.firstName, u.lastName, u.username, u.phone)) LIKE LOWER(CONCAT('%', :searching, '%')) ")
+    Page<User> getUserList(@Param("searching") String searching, @Param("roleId") Long roleId, Pageable pageable);
 }

@@ -25,7 +25,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity()
+@EnableMethodSecurity
 public class SecurityConfig {
     private final JwtAuthFilter authFilter;
     private final AuthService authService;
@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .and()
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/auth/**", "/api/auth/*", "/api/auth/**", "/api/auth/login").permitAll()
+                .requestMatchers("/auth/**", "/api/auth/*", "/api/auth/**", "/api/auth/login", "/api/auth/logout", "/api/auth/refresh").permitAll()
                 .requestMatchers("/user/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
                 .requestMatchers("/download/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
                 .requestMatchers("/admin/**").hasAnyRole("ADMIN")
@@ -80,7 +80,8 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//        configuration.setAllowedOrigins(List.of("https://71b8-37-110-215-29.ngrok-free.app"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

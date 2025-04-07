@@ -124,7 +124,7 @@ public class GroupServiceImpl implements GroupService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Group> pages = groupRepository.search(searching, pageable);
         List<GroupResponseDto> list = pages.getContent().stream().map(group ->
-                        new GroupResponseDto(group.getId(), group.getName(), group.getDescription(), group.getCourse().getName(), group.getTeacher().getUsername(), group.getCreateAt(), group.getUpdateAt()))
+                        new GroupResponseDto(group.getId(), group.getName(), group.getDescription(), group.getCourse().getName(), group.getTeacher().getUsername(), group.getCreatedAt(), group.getUpdatedAt()))
                 .collect(Collectors.toList());
         PageDataResponseDto<List<GroupResponseDto>> dto = new PageDataResponseDto<>(list, pages.getTotalElements());
         return new ResponseDto<>(true, "ok", dto);
@@ -135,7 +135,7 @@ public class GroupServiceImpl implements GroupService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Group> pages = groupRepository.findAll(pageable);
         List<GroupResponseDto> list = pages.getContent().stream().map(group ->
-                        new GroupResponseDto(group.getId(), group.getName(), group.getDescription(), group.getCourse().getName(), group.getTeacher().getUsername(), group.getCreateAt(), group.getUpdateAt()))
+                        new GroupResponseDto(group.getId(), group.getName(), group.getDescription(), group.getCourse().getName(), group.getTeacher().getUsername(), group.getCreatedAt(), group.getUpdatedAt()))
                 .collect(Collectors.toList());
         PageDataResponseDto<List<GroupResponseDto>> dto = new PageDataResponseDto<>(list, pages.getTotalElements());
         return new ResponseDto<>(true, "ok", dto);
@@ -156,7 +156,7 @@ public class GroupServiceImpl implements GroupService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Group> pages = groupRepository.findAllByCourseId(courseId, pageable);
         List<GroupResponseDto> list = pages.getContent().stream().map(group ->
-                        new GroupResponseDto(group.getId(), group.getName(), group.getDescription(), group.getCourse().getName(), group.getTeacher().getUsername(), group.getCreateAt(), group.getUpdateAt()))
+                        new GroupResponseDto(group.getId(), group.getName(), group.getDescription(), group.getCourse().getName(), group.getTeacher().getUsername(), group.getCreatedAt(), group.getUpdatedAt()))
                 .collect(Collectors.toList());
         PageDataResponseDto<List<GroupResponseDto>> dto = new PageDataResponseDto<>(list, pages.getTotalElements());
         return new ResponseDto<>(true, "ok", dto);

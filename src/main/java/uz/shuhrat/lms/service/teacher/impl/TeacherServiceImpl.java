@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import uz.shuhrat.lms.db.domain.Group;
 import uz.shuhrat.lms.db.domain.User;
 import uz.shuhrat.lms.db.customDto.teacher.GroupCustomForTeacher;
-import uz.shuhrat.lms.db.customDto.teacher.StudentCustomDtoForTeacher;
+import uz.shuhrat.lms.db.customDto.teacher.HomeworkListDto;
 import uz.shuhrat.lms.db.domain.Homework;
 import uz.shuhrat.lms.db.repository.admin.GroupRepository;
 import uz.shuhrat.lms.db.repository.student.HomeworkRepository;
@@ -36,45 +36,24 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public ResponseDto<?> getGroupsByCourseId(String courseId, int page, int size) {
-        try {
-            User currentUser = SecurityHelper.getCurrentUser();
-            if (currentUser != null && currentUser.isActive() && currentUser.getRole().getName().equals("ROLE_TEACHER")) {
-                Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-                Page<GroupCustomForTeacher> optionalGroup;
-                if (courseId.equals("all")) {
-                    optionalGroup = teacherRepository.getGroup(currentUser.getId(), pageable);
-                } else {
-                    Long courseID = Long.parseLong(courseId);
-                    optionalGroup = teacherRepository.getGroupsByCourseIdAndTeacherId(courseID, currentUser.getId(), pageable);
-                }
-                return new ResponseDto<>(true, "ok", optionalGroup);
+    public ResponseDto<?> getGroups(String keyword, int page, int size) {
+        User currentUser = SecurityHelper.getCurrentUser();
+        if (currentUser != null && currentUser.isActive() && currentUser.getRole().getName().equals("ROLE_TEACHER")) {
+            Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+            Page<GroupCustomForTeacher> groupCustomForTeacherPage;
+            try {
+                groupCustomForTeacherPage = teacherRepository.getGroups(currentUser.getId(), keyword, pageable);
+            } catch (Exception e) {
+                System.err.println("Teacher Service getGroups method: " + e.getMessage());
+                return new ResponseDto<>(false, e.getMessage());
             }
-            return new ResponseDto<>(false, "Group ro'yxatini olishga ruxsat yo'q!!!");
-        } catch (Exception e) {
-            System.err.println("Teacher Service getGroupsByCourseId method: " + e.getMessage());
-            return new ResponseDto<>(false, e.getMessage());
+            return new ResponseDto<>(true, "ok", groupCustomForTeacherPage);
         }
+        return new ResponseDto<>(false, "Group ro'yxatini olishga ruxsat yo'q!!!");
     }
 
     @Override
-    public ResponseDto<?> getGroups(int page, int size) {
-        try {
-            User currentUser = SecurityHelper.getCurrentUser();
-            if (currentUser != null && currentUser.isActive() && currentUser.getRole().getName().equals("ROLE_TEACHER")) {
-                Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-                Page<GroupCustomForTeacher> optionalGroup = teacherRepository.getGroup(currentUser.getId(), pageable);
-                return new ResponseDto<>(true, "ok", optionalGroup);
-            }
-            return new ResponseDto<>(false, "Group ro'yxatini olishga ruxsat yo'q!!!");
-        } catch (Exception e) {
-            System.err.println("Teacher Service getGroups method: " + e.getMessage());
-            return new ResponseDto<>(false, e.getMessage());
-        }
-    }
-
-    @Override
-    public ResponseDto<?> getStudentOfGroup(Long groupId, String taskId, int page, int size) throws Exception {
+    public ResponseDto<?> getHomeworkList(Long groupId, String taskId, int page, int size) throws Exception {
         try {
             User currentUser = SecurityHelper.getCurrentUser();
             Optional<Group> optionalGroup = groupRepository.findById(groupId);
@@ -83,15 +62,8 @@ public class TeacherServiceImpl implements TeacherService {
             }
             if (currentUser != null && currentUser.getId().equals(optionalGroup.get().getTeacher().getId())) {
                 Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-                Page<StudentCustomDtoForTeacher> custom;
-                UUID taskID;
-                if (taskId == null || taskId.equals("null")) {
-                    taskID = UUID.fromString("5a864d1f-48a6-4157-bf8d-76ba1b777b5c");
-                } else {
-                    taskID = UUID.fromString(taskId);
-                }
-                custom = teacherRepository.getStudentOfGroup(groupId, taskID, pageable);
-                return new ResponseDto<>(true, "ok", custom);
+                Page<HomeworkListDto> homeworkListDtoPage= teacherRepository.getHomeworkByTaskId(UUID.fromString(taskId), pageable);
+                return new ResponseDto<>(true, "ok", homeworkListDtoPage);
             }
             return new ResponseDto<>(false, "Group studentlarini olishga ruxmat yo'q!!!");
         } catch (Exception e) {
