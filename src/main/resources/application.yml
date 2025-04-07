@@ -21,13 +21,15 @@ spring:
       max-request-size: 10MB
       max-file-size: 10MB
   application:
-
-    name: LMS-clone
+    name: LMS
     version: 1.0.0
 jwt:
   secret:
     key: 5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437
-  expireDate: 3600000
+  access:
+    expiration: 3600000
+  refresh:
+    expiration: 604800000
 #logging:
 #  level:
 #    root: INFO

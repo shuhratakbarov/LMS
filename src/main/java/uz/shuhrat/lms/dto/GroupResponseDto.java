@@ -14,6 +14,6 @@ public class GroupResponseDto {
     private String description;
     private String courseName;
     private String teacherUsername;
-    private Date createAt;
-    private Date updateAt;
+    private Date createdAt;
+    private Date updatedAt;
 }

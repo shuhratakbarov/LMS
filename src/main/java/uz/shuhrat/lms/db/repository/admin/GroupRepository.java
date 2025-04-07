@@ -36,7 +36,7 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     @Transactional
     void removeStudentFromGroupByStudentId(@Param("studentId") UUID studentId, @Param("groupId") Long groupId);
 
-    @Query(value = "select id, name from groups ", nativeQuery = true)
+    @Query(value = "select id, name from groups order by name", nativeQuery = true)
     List<GroupIdAndName> getGroupIdAndName();
 
     @Query(value = "SELECT count(*) FROM groups WHERE id IN (:ids)", nativeQuery = true)

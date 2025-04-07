@@ -16,6 +16,7 @@ public interface StudentHomeworkDto {
     String getTaskFileId();
 
     String getTaskName();
+    String getType();
 
     Long getTaskFileSize();
 

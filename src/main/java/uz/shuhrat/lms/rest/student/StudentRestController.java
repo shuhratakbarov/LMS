@@ -28,33 +28,36 @@ public class StudentRestController {
         this.homeworkService = homeworkService;
     }
 
-
-    @GetMapping("/my-groups")
-    public ResponseEntity<?> getGroupsOfStudent() {
-        return ResponseEntity.ok(studentService.getGroupsOfStudent());
-    }
-
-    @GetMapping("/homework/{groupId}")
-    public ResponseEntity<?> getHomeworks(@PathVariable Long groupId) {
-        return ResponseEntity.ok(studentService.getHomeworksOfStudent(groupId));
-    }
-
-    @PostMapping("/upload-homework/{taskId}")
-    public ResponseEntity<?> saveHomework(@PathVariable UUID taskId,
-                                          @RequestParam("file") MultipartFile file) throws Exception {
-        return ResponseEntity.ok(homeworkService.saveHomework(taskId, null, file));
-    }
-
-    @PutMapping("/re-upload-homework/{taskId}")
-    public ResponseEntity<?> updateHomework(@PathVariable UUID taskId,
-                                            @RequestParam(value = "homeworkId", required = false) UUID homeworkId,
-                                            @RequestParam("file") MultipartFile file) throws Exception {
-        return ResponseEntity.ok(homeworkService.saveHomework(taskId, homeworkId, file));
+    @GetMapping("/group")
+    public ResponseEntity<?> getStudentGroupList(@RequestParam(name = "keyword", required = false) String keyword,
+                                                 @RequestParam(required = false, defaultValue = "0") int page,
+                                                 @RequestParam(required = false, defaultValue = "10") int size) {
+        return ResponseEntity.ok(studentService.getStudentGroupList(keyword, page, size));
     }
 
     @GetMapping("/get-count")
     public ResponseEntity<?> getCount() {
         return ResponseEntity.ok(studentService.getHomeworkCount());
+    }
+
+    @GetMapping("/homework")
+    public ResponseEntity<?> getHomeworks(@RequestParam(name = "group-id") Long groupId,
+                                          @RequestParam(required = false, defaultValue = "0") int page,
+                                          @RequestParam(required = false, defaultValue = "5") int size) {
+        return ResponseEntity.ok(studentService.getHomeworksOfStudent(groupId, page, size));
+    }
+
+    @PostMapping("/homework")
+    public ResponseEntity<?> saveHomework(@RequestParam(name = "task-id") UUID taskId,
+                                          @RequestParam(name = "file") MultipartFile file) throws Exception {
+        return ResponseEntity.ok(homeworkService.saveHomework(taskId, null, file));
+    }
+
+    @PatchMapping("/homework/{id}")
+    public ResponseEntity<?> updateHomework(@PathVariable(value = "id") UUID homeworkId,
+                                            @RequestParam(name = "task-id") UUID taskId,
+                                            @RequestParam("file") MultipartFile file) throws Exception {
+        return ResponseEntity.ok(homeworkService.saveHomework(taskId, homeworkId, file));
     }
 }
 

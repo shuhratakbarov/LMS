@@ -10,5 +10,6 @@ import lombok.Setter;
 public class LoginResponseDto {
     private String access_token;
     private String refresh_token;
-    private Long expireDate;
+    private Long accessExpiration;
+    private UserResponseDto user;
 }

@@ -11,7 +11,8 @@ import java.sql.Date;
 @AllArgsConstructor
 public class CreateTaskForm {
     private String name;
+    private String type;
     private Date deadline;
     private BigDecimal maxBall;
-    private Long groupId;
+    private String groupId;
 }

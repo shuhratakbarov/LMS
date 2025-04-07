@@ -15,4 +15,12 @@ public class ResponseDto<T> {
         this.success = success;
         this.message = message;
     }
+
+    public static <T> ResponseDto<T> success(String message, T data) {
+        return new ResponseDto<>(true, message, data);
+    }
+
+    public static <T> ResponseDto<T> error(String message) {
+        return new ResponseDto<>(false, message, null);
+    }
 }

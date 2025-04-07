@@ -11,4 +11,6 @@ public interface GroupCustomForTeacher {
 
     Long getStudentCount();
 
+    Long getTaskCount();
+
 }

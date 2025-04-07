@@ -18,7 +18,7 @@ public class DownloadRestController {
 
     @GetMapping("/{groupId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable("groupId") String groupId,
-                                                 @RequestParam("fileId") String fileId) {
+                                                 @RequestParam("file-id") String fileId) {
         return fileService.downloadFile(fileId, Long.parseLong(groupId));
     }
 }

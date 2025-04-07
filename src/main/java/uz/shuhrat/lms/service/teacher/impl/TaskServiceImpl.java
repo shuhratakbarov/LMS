@@ -1,12 +1,14 @@
 package uz.shuhrat.lms.service.teacher.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import uz.shuhrat.lms.db.domain.File;
-import uz.shuhrat.lms.db.domain.Group;
-import uz.shuhrat.lms.db.domain.User;
-import uz.shuhrat.lms.db.domain.Task;
+import uz.shuhrat.lms.db.customDto.teacher.GroupCustomForTeacher;
+import uz.shuhrat.lms.db.domain.*;
 import uz.shuhrat.lms.db.repository.admin.GroupRepository;
 import uz.shuhrat.lms.db.repository.teacher.TaskRepository;
 import uz.shuhrat.lms.db.repository.admin.UserRepository;
@@ -40,24 +42,27 @@ public class TaskServiceImpl implements TaskService {
     public ResponseDto<?> saveTask(MultipartFile multipartFile, CreateTaskForm form) {
         try {
             User currentUser = SecurityHelper.getCurrentUser();
-            List<Long> groupIds;
-            if (currentUser != null) {
-                groupIds = teacherRepository.getGroupsOfTeacher(currentUser.getId());
-            } else {
+            if (currentUser == null) {
                 throw new Exception("current user not found");
             }
+
             if (form.getDeadline().before(new Date())) {
                 throw new Exception("Talabalarni qiynamang:)!");
             }
-            if (!multipartFile.isEmpty() && groupIds.contains(form.getGroupId()) && form.getDeadline() != null && form.getMaxBall() != null && form.getName() != null) {
-                File file = (File) fileService.save(multipartFile).getData();
-                Optional<Group> optionalGroup = groupRepository.findById(form.getGroupId());
+            if (!multipartFile.isEmpty() && form.getDeadline() != null && form.getMaxBall() != null && form.getName() != null && form.getType() != null) {
+
+                Optional<Group> optionalGroup = groupRepository.findById(Long.parseLong(form.getGroupId()));
                 if (optionalGroup.isEmpty()) {
                     return new ResponseDto<>(false, "Group topilmadi!!!");
                 }
+//                if (currentUser.getId() != optionalGroup.get().getTeacher().getId()) {
+//                    throw new Exception("sizga mumkin emas");
+//                }
+                File file = (File) fileService.save(multipartFile).getData();
                 Task task = new Task();
                 Group group = optionalGroup.get();
                 task.setName(form.getName());
+                task.setType(form.getType());
                 task.setGroup(group);
                 task.setDeadline(form.getDeadline());
                 task.setMaxBall(form.getMaxBall());
@@ -78,11 +83,18 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public ResponseDto<?> editTask(UUID taskId, CreateTaskForm form, MultipartFile multipartFile) {
         try {
-            User correntUser = SecurityHelper.getCurrentUser();
-            Optional<Task> optionalTask = taskRepository.findById(taskId);
-            if (correntUser == null) {
+            User currentUser = SecurityHelper.getCurrentUser();
+            if (currentUser == null) {
                 return new ResponseDto<>(false, "User topilmadi!!!");
             }
+            Optional<Group> optionalGroup = groupRepository.findById(taskRepository.findById(taskId).get().getGroup().getId());
+            if (optionalGroup.isEmpty()) {
+                return new ResponseDto<>(false, "Group topilmadi!!!");
+            }
+//            if (currentUser.getId() != optionalGroup.get().getTeacher().getId()) {
+//                return new ResponseDto<>(false, "Sizga mumkin emas!");
+//            }
+            Optional<Task> optionalTask = taskRepository.findById(taskId);
             if (optionalTask.isEmpty()) {
                 return new ResponseDto<>(false, "Task topilmadi!!!");
             }
@@ -95,16 +107,11 @@ public class TaskServiceImpl implements TaskService {
             } else {
                 return new ResponseDto<>(false, "Fayl yuklanmadi");
             }
-            Optional<User> optionalTeacher = userRepository.findById(correntUser.getId());
-            if (optionalTeacher.isEmpty()) {
-                return new ResponseDto<>(false, "O'qtuvchi topilmadi!!!");
-            }
-            Optional<Group> optionalGroup = groupRepository.findById(form.getGroupId());
-            if (optionalGroup.isEmpty()) {
-                return new ResponseDto<>(false, "Group topilmadi!!!");
-            }
             Task task = new Task();
+            task.setId(taskId);
             task.setName(form.getName());
+            task.setType(form.getType());
+            task.setGroup(optionalGroup.get());
             task.setFile(file);
             task.setDeadline(form.getDeadline());
             task.setMaxBall(form.getMaxBall());
@@ -119,20 +126,20 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public ResponseDto<?> deleteTask(UUID taskId) {
         try {
-            User correntUser = SecurityHelper.getCurrentUser();
-            Optional<Task> optionalTask = taskRepository.findById(taskId);
-            if (correntUser == null) {
+            User currentUser = SecurityHelper.getCurrentUser();
+            if (currentUser == null) {
                 return new ResponseDto<>(false, "User topilmadi!!!");
             }
-            if (optionalTask.isEmpty()) {
-                return new ResponseDto<>(false, "Task topilmadi!!!");
-            }
-
-            if (optionalTask.get().getFile().getPkey() != null) {
-                fileService.delete(optionalTask.get().getFile().getPkey(), optionalTask.get().getFile().getName());
-            }
-            taskRepository.delete(optionalTask.get());
-            return new ResponseDto<>(true, "Task o'chirildi");
+            Optional<Task> optionalTask = taskRepository.findById(taskId);
+//            if (currentUser.getId() == groupRepository.findById(optionalTask.get().getGroup().getId()).get().getTeacher().getId()) {
+                if (optionalTask.get().getFile().getPkey() != null) {
+                    fileService.delete(optionalTask.get().getFile().getPkey(), optionalTask.get().getFile().getName());
+                }
+                taskRepository.delete(optionalTask.get());
+                return new ResponseDto<>(true, "Task o'chirildi");
+//            } else {
+//                return new ResponseDto<>(false, "Sizga mumkin emas!");
+//            }
         } catch (Exception e) {
             System.err.println("Task Service deleteTask method: " + e.getMessage());
             return new ResponseDto<>(false, e.getMessage());
@@ -141,6 +148,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ResponseDto<?> findAllWithFiles(Long groupId) {
-        return new ResponseDto<>(true, "ok", taskRepository.getTasks(groupId));
+        return new ResponseDto<>(true, "ok", taskRepository.getGroupTasks(groupId));
     }
+
 }

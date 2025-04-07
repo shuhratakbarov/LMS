@@ -6,16 +6,16 @@ import org.springframework.web.bind.annotation.*;
 import uz.shuhrat.lms.service.admin.UserService;
 
 @RestController
-@RequestMapping("/user")
-public class UserRestController {
+@RequestMapping
+public class OpenRestController {
     private final UserService userService;
 
     @Autowired
-    public UserRestController(UserService userService) {
+    public OpenRestController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping("/get-user-info")
+    @GetMapping("/user-info")
     public ResponseEntity<?> getUserInfo() throws Exception {
         return ResponseEntity.ok(userService.currentUserInfo());
     }

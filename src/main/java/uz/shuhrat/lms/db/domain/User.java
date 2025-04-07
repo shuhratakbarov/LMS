@@ -48,9 +48,9 @@ public class User implements UserDetails {
     private Role role;
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private Date createAt;
+    private Date createdAt;
     @UpdateTimestamp
-    private Date updateAt;
+    private Date updatedAt;
     @Builder.Default
     private boolean accountNonExpired = true;
     @Builder.Default
