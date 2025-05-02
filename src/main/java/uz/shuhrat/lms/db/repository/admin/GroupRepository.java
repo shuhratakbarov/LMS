@@ -12,16 +12,21 @@ import uz.shuhrat.lms.db.domain.Group;
 import uz.shuhrat.lms.db.customDto.admin.GroupIdAndName;
 import uz.shuhrat.lms.db.customDto.admin.ViewGroupAndCount;
 import uz.shuhrat.lms.db.customDto.admin.ViewGroupAndTeacher;
+import uz.shuhrat.lms.db.domain.LessonSchedule;
 
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Repository
 public interface GroupRepository extends JpaRepository<Group, Long> {
+    @Query("SELECT ls FROM LessonSchedule ls WHERE ls.room.id = :roomId")
+    List<LessonSchedule> findLessonSchedulesByRoomId(@Param("roomId") Long roomId);
+
     Page<Group> findAllByCourseId(Long courseId, Pageable pageable);
 
     @Query(value = "SELECT g FROM Group g WHERE LOWER(CONCAT(g.id, g.name,g.description, g.course.name)) LIKE LOWER(CONCAT('%', :searching, '%'))")
-    Page<Group> search(@Param("searching") String searching, Pageable pageable);
+    Page<Group> getGroups(@Param("searching") String searching, Pageable pageable);
 
     @Query(value = "SELECT g.name, (SELECT COUNT(*) FROM group_student gs WHERE gs.group_id = g.id) AS count FROM groups g" +
                    " WHERE g.teacher_id = :id", nativeQuery = true)

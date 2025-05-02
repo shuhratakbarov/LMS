@@ -6,9 +6,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import uz.shuhrat.lms.db.domain.Course;
-import uz.shuhrat.lms.db.domain.Group;
-import uz.shuhrat.lms.db.domain.User;
+import org.springframework.transaction.annotation.Transactional;
+import uz.shuhrat.lms.db.domain.*;
 import uz.shuhrat.lms.db.customDto.admin.GroupIdAndName;
 import uz.shuhrat.lms.db.repository.admin.CourseRepository;
 import uz.shuhrat.lms.db.repository.admin.GroupRepository;
@@ -38,55 +37,60 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public ResponseDto<?> save(CreateGroupForm form) throws Exception {
-        try {
+    public ResponseDto<?> save(CreateGroupForm form) {
             if (form == null || form.getName() == null || form.getCourseId() == null) {
-                throw new Exception("Ma'lumotlar to'liq emas!!!");
+                return new ResponseDto<>(false, "Ma'lumotlar to'liq emas!!!");
             }
-            Optional<Course> cOp = courseRepository.findById(form.getCourseId());
-            if (cOp.isEmpty()) {
-                throw new Exception("Bunday course mavjud emas!!");
-            }
-            Optional<User> uOp = userRepository.findById(form.getTeacherId());
-            if (uOp.isEmpty()) {
-                throw new Exception("Bunday teacher mavjud emas!!");
-            }
-            Group g = new Group();
-            g.setName(form.getName());
-            g.setDescription(form.getDescription());
-            g.setCourse(cOp.get());
-            g.setTeacher(uOp.get());
-            g = groupRepository.save(g);
-            if (g.getId() == null) {
-                throw new Exception("Saqlanmadi");
+        try {
+            Group group = new Group();
+            group.setName(form.getName());
+            group.setDescription(form.getDescription());
+            group.setTeacher(userRepository.findById(form.getTeacherId())
+                    .orElseThrow(() -> new RuntimeException("Teacher not found")));
+            group.setCourse(courseRepository.findById(form.getCourseId())
+                    .orElseThrow(() -> new RuntimeException("Course not found")));
+            group = groupRepository.save(group);
+            if (group.getId() == null) {
+                return new ResponseDto<>(false, "An error occurred while creating the group");
             }
             return new ResponseDto<>(true, "ok");
         } catch (Exception e) {
-            System.out.println("Group Service save method: " + e.getMessage());
+            System.err.println("Group Service save method: " + e.getMessage());
             return new ResponseDto<>(false, e.getMessage());
         }
     }
 
     @Override
-    public ResponseDto<?> edit(Long id, CreateGroupForm form) throws Exception {
+    public ResponseDto<?> getGroupList(String searching, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Group> pages = groupRepository.getGroups(searching, pageable);
+        List<GroupResponseDto> list = pages.getContent().stream().map(group ->
+                        new GroupResponseDto(group.getId(), group.getName(), group.getDescription(), group.getCourse().getName(), group.getTeacher().getUsername(), group.getCreatedAt(), group.getUpdatedAt()))
+                .collect(Collectors.toList());
+        PageDataResponseDto<List<GroupResponseDto>> dto = new PageDataResponseDto<>(list, pages.getTotalElements());
+        return new ResponseDto<>(true, "ok", dto);
+    }
+
+    @Override
+    public ResponseDto<?> edit(Long id, CreateGroupForm form) {
+        if (form == null || form.getName() == null || form.getCourseId() == null) {
+            return new ResponseDto<>(false, "Ma'lumotlar to'liq emas!!!");
+        }
         try {
-            if (form == null || form.getName() == null || form.getCourseId() == null) {
-                throw new Exception("Ma'lumotlar to'liq emas!!!");
-            }
-            Optional<User> uOp = userRepository.findById(form.getTeacherId());
-            if (uOp.isEmpty()) {
-                throw new Exception("Teacher topilmadi");
-            }
             Optional<Group> gOp = groupRepository.findById(id);
             if (gOp.isEmpty()) {
                 throw new Exception("Guruh topilmadi");
             }
-            Group g = gOp.get();
-            g.setName(form.getName());
-            g.setDescription(form.getDescription());
-            g = groupRepository.save(g);
-            if (g.getId() == null) {
-                throw new Exception("Saqlanmadi");
+            Group group = gOp.get();
+            group.setName(form.getName());
+            group.setTeacher(userRepository.findById(form.getTeacherId())
+                    .orElseThrow(() -> new RuntimeException("Teacher not found")));
+            group.setCourse(courseRepository.findById(form.getCourseId())
+                    .orElseThrow(() -> new RuntimeException("Course not found")));
+            group.setDescription(form.getDescription());
+            group = groupRepository.save(group);
+            if (group.getId() == null) {
+                return new ResponseDto<>(false, "An error occurred while creating the group");
             }
             return new ResponseDto<>(true, "ok");
         } catch (Exception e) {
@@ -118,29 +122,6 @@ public class GroupServiceImpl implements GroupService {
         }
     }
 
-
-    @Override
-    public ResponseDto<?> search(String searching, int page, int size) throws Exception {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<Group> pages = groupRepository.search(searching, pageable);
-        List<GroupResponseDto> list = pages.getContent().stream().map(group ->
-                        new GroupResponseDto(group.getId(), group.getName(), group.getDescription(), group.getCourse().getName(), group.getTeacher().getUsername(), group.getCreatedAt(), group.getUpdatedAt()))
-                .collect(Collectors.toList());
-        PageDataResponseDto<List<GroupResponseDto>> dto = new PageDataResponseDto<>(list, pages.getTotalElements());
-        return new ResponseDto<>(true, "ok", dto);
-    }
-
-    @Override
-    public ResponseDto<?> findAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<Group> pages = groupRepository.findAll(pageable);
-        List<GroupResponseDto> list = pages.getContent().stream().map(group ->
-                        new GroupResponseDto(group.getId(), group.getName(), group.getDescription(), group.getCourse().getName(), group.getTeacher().getUsername(), group.getCreatedAt(), group.getUpdatedAt()))
-                .collect(Collectors.toList());
-        PageDataResponseDto<List<GroupResponseDto>> dto = new PageDataResponseDto<>(list, pages.getTotalElements());
-        return new ResponseDto<>(true, "ok", dto);
-    }
-
     @Override
     public ResponseDto<?> findGroupsByTeacherId(UUID teacherId) {
         return new ResponseDto<>(true, "ok", groupRepository.getGroupsAndCountByTeacherId(teacherId));
@@ -161,7 +142,6 @@ public class GroupServiceImpl implements GroupService {
         PageDataResponseDto<List<GroupResponseDto>> dto = new PageDataResponseDto<>(list, pages.getTotalElements());
         return new ResponseDto<>(true, "ok", dto);
     }
-
 
     @Override
     public ResponseDto<?> addStudentToGroup(UUID studentId, Long groupId) {

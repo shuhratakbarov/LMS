@@ -19,6 +19,7 @@ import java.io.Serializable;
 public class File implements Serializable {
     @Id
     private String pkey;
+
     private String name;
     private Long size;
     private String pathUrl;

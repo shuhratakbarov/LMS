@@ -17,13 +17,10 @@ public class CourseRestController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getCourseList(@RequestParam(required = false, name = "searching") String keyword,
+    public ResponseEntity<?> getCourseList(@RequestParam(required = false, name = "keyword") String keyword,
                                            @RequestParam(required = false, defaultValue = "0") int page,
                                            @RequestParam(required = false, defaultValue = "20") int size) throws Exception {
-        if (keyword != null) {
-            return ResponseEntity.ok(courseService.search(keyword, page, size));
-        }
-        return ResponseEntity.ok(courseService.findAll(page, size));
+        return ResponseEntity.ok(courseService.getCourseList(keyword, page, size));
     }
 
     @PostMapping

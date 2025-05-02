@@ -20,16 +20,22 @@ import java.util.List;
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(unique = true, nullable = false)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY)
     private Course course;
+
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY)
     private User teacher;
+
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(
@@ -39,11 +45,11 @@ public class Group {
     )
     @JsonIgnore
     private List<User> students;
-    @Column(columnDefinition = "TEXT")
-    private String description;
+
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
     private Date createdAt;
+
     @UpdateTimestamp
     private Date updatedAt;
 }

@@ -22,9 +22,10 @@ public class AttachmentContent {
     )
     @Column(updatable = false, nullable = false)
     private UUID pkey;
+
     private String contentType;
     private byte[] bytes;
+
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "attachment_id")
     private Attachment attachment;
 }

@@ -16,7 +16,7 @@ import java.util.Optional;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
     @Query("SELECT c FROM Course c WHERE LOWER(CONCAT(c.id, c.name, c.description)) LIKE LOWER(CONCAT('%', :searching, '%'))")
-    Page<Course> search(@Param("searching") String searching, Pageable pageable);
+    Page<Course> getCourseList(@Param("searching") String searching, Pageable pageable);
 
     @Query("SELECT COUNT(g) FROM Group g JOIN g.course c WHERE c.id = :id")
     Optional<Long> countGroupsByCourseId(@Param("id") Long id);

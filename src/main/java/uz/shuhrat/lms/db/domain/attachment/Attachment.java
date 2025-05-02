@@ -17,8 +17,10 @@ public class Attachment {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(updatable = false, nullable = false)
     private UUID pkey;
+
     private String name;
     private Long size;
+
     @OneToOne(mappedBy = "attachment", fetch = FetchType.LAZY)
     private AttachmentContent content;
 }

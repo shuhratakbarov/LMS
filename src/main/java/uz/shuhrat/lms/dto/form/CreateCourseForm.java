@@ -11,5 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CreateCourseForm {
     private String name;
+    private Integer duration;
     private String description;
 }

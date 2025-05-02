@@ -33,6 +33,7 @@ public class CourseServiceImpl implements CourseService {
             }
             Course course = new Course();
             course.setName(form.getName());
+            course.setDuration(form.getDuration());
             course.setDescription(form.getDescription());
             course = courseRepository.save(course);
             if (course.getId() == null) {
@@ -54,6 +55,7 @@ public class CourseServiceImpl implements CourseService {
             }
             Course course = cOp.get();
             course.setName(form.getName());
+            course.setDuration(form.getDuration());
             course.setDescription(form.getDescription());
             course = courseRepository.save(course);
             if (course.getId() == null) {
@@ -90,20 +92,14 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public ResponseDto<?> findAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        return new ResponseDto<>(true, "ok", courseRepository.findAll(pageable));
-    }
-
-    @Override
     public ResponseDto<?> findCoursesForSelect() {
         return new ResponseDto<>(true, "ok", courseRepository.findCoursesForSelect());
     }
 
     @Override
-    public ResponseDto<?> search(String searching, int page, int size) throws Exception {
+    public ResponseDto<?> getCourseList(String searching, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<Course> pages = courseRepository.search(searching, pageable);
+        Page<Course> pages = courseRepository.getCourseList(searching, pageable);
         List<Course> list = pages.getContent();
         PageDataResponseDto<List<Course>> dto = new PageDataResponseDto<>(list, pages.getTotalElements());
         return new ResponseDto<>(true, "ok", dto);
