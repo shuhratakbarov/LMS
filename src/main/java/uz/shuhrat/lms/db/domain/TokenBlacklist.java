@@ -27,5 +27,4 @@ public class TokenBlacklist {
         this.token = token;
         this.expirationDate = expirationDate;
     }
-
 }

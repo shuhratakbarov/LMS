@@ -27,12 +27,16 @@ public class User implements UserDetails {
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
+
     @Column(nullable = false)
     private String firstName;
+
     @Column(nullable = false)
     private String lastName;
+
     @Column(nullable = false, unique = true)
     private String email;
+
     private String phone;
     private String address;
     private Date birthDate;
@@ -41,16 +45,21 @@ public class User implements UserDetails {
      */
     @Column(nullable = false, unique = true)
     private String username;
+
     @Column(nullable = false)
     private String password;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     private Role role;
+
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
     private Date createdAt;
+
     @UpdateTimestamp
     private Date updatedAt;
+
     @Builder.Default
     private boolean accountNonExpired = true;
     @Builder.Default

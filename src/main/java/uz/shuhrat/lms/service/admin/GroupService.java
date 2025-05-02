@@ -12,9 +12,7 @@ public interface GroupService {
 
     ResponseDto<?> delete(Long id) throws Exception;
 
-    ResponseDto<?> search(String searching, int page, int size) throws Exception;
-
-    ResponseDto<?> findAll(int page, int size) throws Exception;
+    ResponseDto<?> getGroupList(String searching, int page, int size) throws Exception;
 
     ResponseDto<?> findGroupsByTeacherId(UUID teacherId) throws Exception;
 

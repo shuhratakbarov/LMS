@@ -26,13 +26,10 @@ public class GroupRestController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getListGroup(@RequestParam(required = false, name = "searching") String keyword,
+    public ResponseEntity<?> getGroupList(@RequestParam(required = false, name = "keyword") String keyword,
                                           @RequestParam(required = false, defaultValue = "0") int page,
                                           @RequestParam(required = false, defaultValue = "20") int size) throws Exception {
-        if (keyword != null) {
-            return ResponseEntity.ok(groupService.search(keyword, page, size));
-        }
-        return ResponseEntity.ok(groupService.findAll(page, size));
+        return ResponseEntity.ok(groupService.getGroupList(keyword, page, size));
     }
 
     @GetMapping("/course-id-and-name")
@@ -66,6 +63,11 @@ public class GroupRestController {
     public ResponseEntity<?> createGroup(@RequestBody CreateGroupForm form) throws Exception {
         return ResponseEntity.ok(groupService.save(form));
     }
+
+//    @PostMapping("/check-conflict")
+//    public ResponseEntity<?> checkConflict(@RequestBody CreateGroupForm form) {
+//        return ResponseEntity.ok(groupService.checkForScheduleConflict(form));
+//    }
 
     @PostMapping("/add-student")
     public ResponseEntity<?> addStudent(@RequestParam("student-id") UUID studentId,

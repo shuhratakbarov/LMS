@@ -18,13 +18,20 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
+    @Column(nullable = false)
+    private int duration;
+
     @Column(columnDefinition = "TEXT")
     private String description;
+
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
     private Date createdAt;
+
     @UpdateTimestamp
     private Date updatedAt;
 }
