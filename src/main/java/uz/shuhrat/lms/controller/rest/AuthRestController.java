@@ -1,12 +1,10 @@
-package uz.shuhrat.lms.rest;
+package uz.shuhrat.lms.controller.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.shuhrat.lms.dto.RefreshRequestDTO;
-import uz.shuhrat.lms.dto.form.LoginForm;
-import uz.shuhrat.lms.dto.request.ChangePasswordRequestDto;
-import uz.shuhrat.lms.service.admin.UserService;
+import uz.shuhrat.lms.dto.request.RefreshRequestDto;
+import uz.shuhrat.lms.dto.request.LoginRequestDto;
 import uz.shuhrat.lms.service.auth.AuthService;
 
 @RestController
@@ -20,7 +18,7 @@ public class AuthRestController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginForm form) throws Exception {
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto form) {
         return ResponseEntity.ok(authService.login(form));
     }
 
@@ -31,7 +29,7 @@ public class AuthRestController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody RefreshRequestDTO refreshRequestDTO) {
-        return ResponseEntity.ok(authService.refresh(refreshRequestDTO.getRefreshToken()));
+    public ResponseEntity<?> refresh(@RequestBody RefreshRequestDto refreshRequestDTO) {
+        return ResponseEntity.ok(authService.refresh(refreshRequestDTO.refreshToken()));
     }
 }

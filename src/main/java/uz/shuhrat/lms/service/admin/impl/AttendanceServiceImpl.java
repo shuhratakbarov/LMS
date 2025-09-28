@@ -9,9 +9,9 @@ import uz.shuhrat.lms.db.domain.User;
 import uz.shuhrat.lms.db.repository.AttendanceRepository;
 import uz.shuhrat.lms.db.repository.LessonInstanceRepository;
 import uz.shuhrat.lms.db.repository.admin.UserRepository;
-import uz.shuhrat.lms.dto.AttendanceDTO;
-import uz.shuhrat.lms.dto.MarkAttendanceDTO;
-import uz.shuhrat.lms.dto.ResponseDto;
+import uz.shuhrat.lms.dto.request.AttendanceRequestDto;
+import uz.shuhrat.lms.dto.GeneralResponseDto;
+import uz.shuhrat.lms.dto.request.MarkAttendanceRequestDto;
 import uz.shuhrat.lms.service.admin.AttendanceService;
 
 import java.util.ArrayList;
@@ -35,61 +35,66 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Transactional
     @Override
-    public ResponseDto<?> markAttendance(MarkAttendanceDTO markAttendanceDTO) throws Exception {
-        LessonInstance lessonInstance = lessonInstanceRepository.findById(markAttendanceDTO.getLessonInstanceId())
-                .orElseThrow(() -> new RuntimeException("Lesson instance not found: " + markAttendanceDTO.getLessonInstanceId()));
+    public GeneralResponseDto<?> markAttendance(MarkAttendanceRequestDto markAttendanceRequestDto) throws Exception {
+        LessonInstance lessonInstance = lessonInstanceRepository.findById(markAttendanceRequestDto.lessonInstanceId())
+                .orElseThrow(() -> new RuntimeException("Lesson instance not found: " + markAttendanceRequestDto.lessonInstanceId()));
 
-        List<AttendanceDTO> attendanceDTOs = markAttendanceDTO.getAttendanceDTOS();
+        List<AttendanceRequestDto> attendanceRequestDtoList = markAttendanceRequestDto.attendanceRequestDtoList();
 
         // Step 1: Check student existence in bulk
-        List<UUID> studentIds = attendanceDTOs.stream()
-                .map(AttendanceDTO::getStudentId)
+        List<UUID> studentIds = attendanceRequestDtoList.stream()
+                .map(AttendanceRequestDto::studentId)
                 .collect(Collectors.toList());
         List<User> students = userRepository.findAllById(studentIds);
         Map<UUID, User> studentMap = students.stream()
                 .collect(Collectors.toMap(User::getId, user -> user));
-        for (AttendanceDTO dto : attendanceDTOs) {
-            if (!studentMap.containsKey(dto.getStudentId())) {
-                throw new RuntimeException("Student not found: " + dto.getStudentId());
+        for (AttendanceRequestDto dto : attendanceRequestDtoList) {
+            if (!studentMap.containsKey(dto.studentId())) {
+                throw new RuntimeException("Student not found: " + dto.studentId());
             }
         }
 
         // Step 2: Fetch existing attendance records in bulk
         List<Attendance> existingAttendances = attendanceRepository.findByLessonInstanceIdAndStudentIds(
-                markAttendanceDTO.getLessonInstanceId(), studentIds);
+                markAttendanceRequestDto.lessonInstanceId(), studentIds);
         Map<UUID, Attendance> existingAttendanceMap = existingAttendances.stream()
                 .collect(Collectors.toMap(att -> att.getStudent().getId(), att -> att));
 
         // Step 3: Validate and prepare Attendance entities (update or create)
         List<Attendance> attendancesToSave = new ArrayList<>();
-        for (AttendanceDTO dto : attendanceDTOs) {
+        for (AttendanceRequestDto dto : attendanceRequestDtoList) {
             Boolean isPresent = dto.isPresent();
-            Integer minutesLate = dto.getMinutesLate();
+            Integer minutesLate = getMinutesLate(dto, isPresent);
 
-            if (isPresent == null) {
-                throw new Exception("Attendance status (is_present) must be specified for student " + dto.getStudentId());
-            }
-            if (minutesLate < 0) {
-                throw new Exception("Minutes late cannot be negative for student " + dto.getStudentId());
-            }
-            if (!isPresent && minutesLate > 0) {
-                throw new Exception("Minutes late should be 0 if the student is absent for student " + dto.getStudentId());
-            }
-
-            Attendance attendance = existingAttendanceMap.getOrDefault(dto.getStudentId(), new Attendance());
+            Attendance attendance = existingAttendanceMap.getOrDefault(dto.studentId(), new Attendance());
             attendance.setLessonInstance(lessonInstance);
-            attendance.setStudent(studentMap.get(dto.getStudentId()));
+            attendance.setStudent(studentMap.get(dto.studentId()));
             attendance.setIsPresent(isPresent);
             attendance.setMinutesLate(minutesLate);
             attendancesToSave.add(attendance);
         }
 
         // Step 4: Save all attendances (creates new or updates existing)
-        return new ResponseDto<>(true, "ok", attendanceRepository.saveAll(attendancesToSave));
+        return new GeneralResponseDto<>(true, "ok", attendanceRepository.saveAll(attendancesToSave));
     }
 
-    public ResponseDto<?> getAttendanceByLessonInstance(Long lessonInstanceId) {
-        return new ResponseDto<>(true, "ok", attendanceRepository.findAll().stream()
+    private static Integer getMinutesLate(AttendanceRequestDto dto, Boolean isPresent) throws Exception {
+        int minutesLate = dto.minutesLate();
+
+        if (isPresent == null) {
+            throw new Exception("Attendance status (is_present) must be specified for student " + dto.studentId());
+        }
+        if (minutesLate < 0) {
+            throw new Exception("Minutes late cannot be negative for student " + dto.studentId());
+        }
+        if (!isPresent && minutesLate > 0) {
+            throw new Exception("Minutes late should be 0 if the student is absent for student " + dto.studentId());
+        }
+        return minutesLate;
+    }
+
+    public GeneralResponseDto<?> getAttendanceByLessonInstance(Long lessonInstanceId) {
+        return new GeneralResponseDto<>(true, "ok", attendanceRepository.findAll().stream()
                 .filter(att -> att.getLessonInstance().getId().equals(lessonInstanceId))
                 .toList());
     }

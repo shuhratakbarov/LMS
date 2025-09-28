@@ -1,10 +1,10 @@
-package uz.shuhrat.lms.rest.admin;
+package uz.shuhrat.lms.controller.rest.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import uz.shuhrat.lms.dto.form.CreateGroupForm;
+import uz.shuhrat.lms.dto.request.GroupRequestDto;
 import uz.shuhrat.lms.service.admin.CourseService;
 import uz.shuhrat.lms.service.admin.GroupService;
 import uz.shuhrat.lms.service.admin.UserService;
@@ -60,12 +60,12 @@ public class GroupRestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createGroup(@RequestBody CreateGroupForm form) throws Exception {
+    public ResponseEntity<?> createGroup(@RequestBody GroupRequestDto form) throws Exception {
         return ResponseEntity.ok(groupService.save(form));
     }
 
 //    @PostMapping("/check-conflict")
-//    public ResponseEntity<?> checkConflict(@RequestBody CreateGroupForm form) {
+//    public ResponseEntity<?> checkConflict(@RequestBody GroupRequestDto form) {
 //        return ResponseEntity.ok(groupService.checkForScheduleConflict(form));
 //    }
 
@@ -77,7 +77,7 @@ public class GroupRestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> editGroup(@PathVariable Long id,
-                                       @RequestBody CreateGroupForm form) throws Exception {
+                                       @RequestBody GroupRequestDto form) throws Exception {
         return ResponseEntity.ok(groupService.edit(id, form));
     }
 

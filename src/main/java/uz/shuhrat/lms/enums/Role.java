@@ -1,4 +1,4 @@
-package uz.shuhrat.lms.db.domain.enums;
+package uz.shuhrat.lms.enums;
 
 import org.springframework.security.core.GrantedAuthority;
 

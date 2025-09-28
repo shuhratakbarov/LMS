@@ -1,15 +1,11 @@
-package uz.shuhrat.lms.dto;
-
-import lombok.Getter;
-import lombok.Setter;
+package uz.shuhrat.lms.dto.request;
 
 import java.util.UUID;
 
-@Getter
-@Setter
-public class AttendanceRequestDto {
-    private UUID studentId;
-    private Long lessonInstanceId;
-    private boolean isPresent;
-    private int minutesLate;
+public record AttendanceRequestDto(
+        UUID studentId,
+        Long lessonInstanceId,
+        boolean isPresent,
+        int minutesLate
+) {
 }

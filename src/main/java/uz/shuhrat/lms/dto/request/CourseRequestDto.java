@@ -1,16 +1,10 @@
-package uz.shuhrat.lms.dto.form;
+package uz.shuhrat.lms.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import javax.validation.constraints.NotBlank;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class CourseRequestDto {
-    private String name;
-    private Integer duration;
-    private String description;
+public record CourseRequestDto(
+        @NotBlank String name,
+        @NotBlank Integer duration,
+        String description
+) {
 }

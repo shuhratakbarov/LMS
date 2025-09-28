@@ -1,4 +1,6 @@
-package uz.shuhrat.lms.component;
+package uz.shuhrat.lms.annotation;
+
+import uz.shuhrat.lms.validator.PasswordConstraintValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

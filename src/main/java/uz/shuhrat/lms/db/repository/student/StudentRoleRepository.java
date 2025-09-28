@@ -6,11 +6,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import uz.shuhrat.lms.db.customDto.student.StudentDto;
-import uz.shuhrat.lms.db.customDto.student.StudentHomeworkDto;
+import uz.shuhrat.lms.projection.CourseGroupCountProjection;
+import uz.shuhrat.lms.projection.GroupsOfStudentProjection;
+import uz.shuhrat.lms.projection.HomeworkNotificationDetailsProjection;
+import uz.shuhrat.lms.projection.StudentHomeworkProjection;
 import uz.shuhrat.lms.db.domain.Homework;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -27,7 +31,7 @@ public interface StudentRoleRepository extends JpaRepository<Homework, UUID> {
                     GROUP BY g.id, c.name, c.id, u.first_name, u.last_name
                     """
     )
-    Page<StudentDto> getGroupsOfStudent(@Param("studentId") UUID studentId, @Param("keyword") String keyword, Pageable pageable);
+    Page<GroupsOfStudentProjection> getGroupsOfStudent(@Param("studentId") UUID studentId, @Param("keyword") String keyword, Pageable pageable);
 
     @Query(value = "select * from " +
                    " (select t.id as taskId, t.deadline, t.type, t.max_ball as maxBall, t.name as taskName, t.file_id as taskFileId, " +
@@ -42,13 +46,56 @@ public interface StudentRoleRepository extends JpaRepository<Homework, UUID> {
                          " left join (select h.id, h.task_id from homework h " +
                          " left join files f on f.pkey = h.file_id where h.student_id = :studentId) h on t.id = h.task_id",
             nativeQuery = true)
-    Page<StudentHomeworkDto> getHomeworksOfStudent(@Param("groupId") Long groupId, @Param("studentId") UUID studentId, Pageable pageable);
+    Page<StudentHomeworkProjection> getHomeworksOfStudent(@Param("groupId") Long groupId, @Param("studentId") UUID studentId, Pageable pageable);
 
+    @Query(nativeQuery = true, value =
+            "SELECT " +
+            "c.name AS courseName, " +
+            "g.name AS groupName, " +
+            "g.id AS groupId, " +
+            "t.name AS taskName, " +
+            "t.type AS taskType, " +
+            "t.deadline, " +
+            "EXTRACT(DAY FROM (t.deadline - CURRENT_DATE)) AS daysLeft, " +
+            "t.id AS taskId " +
+            "FROM ( " +
+            "SELECT * FROM tasks " +
+            "WHERE group_id IN ( " +
+            "SELECT DISTINCT group_id " +
+            "FROM group_student " +
+            "WHERE student_id = :studentId " +
+            ") " +
+            ") t " +
+            "LEFT JOIN ( " +
+            "SELECT * FROM homework " +
+            "WHERE student_id = :studentId " +
+            ") h ON h.task_id = t.id " +
+            "INNER JOIN groups g ON t.group_id = g.id " +
+            "INNER JOIN courses c ON g.course_id = c.id " +
+            "WHERE h.id IS NULL " +
+            "AND t.deadline > CURRENT_TIMESTAMP " +
+            "ORDER BY " +
+            "t.deadline ASC, " +
+            "c.name, " +
+            "t.name " +
+            "LIMIT 15")
+    List<HomeworkNotificationDetailsProjection> getHomeworkNotificationDetails(@Param("studentId") UUID studentId);
     @Query(nativeQuery = true,
-            value = "select count(*) from (select * from tasks " +
-                    " where group_id in (select distinct group_id from group_student where student_id=:studentId)) t " +
-                    " left join (select * from homework where student_id=:studentId) h on h.task_id=t.id " +
-                    " where h.id IS NULL " +
-                    " AND t.deadline > CURRENT_TIMESTAMP")
-    List<Integer> getHomeworkCount(@Param("studentId") UUID studentId);
+            value = """
+                    SELECT COUNT(DISTINCT g.course_id) AS "courseCount",
+                        COUNT(DISTINCT gs.group_id) AS "groupCount"
+                    FROM group_student gs
+                        JOIN groups g ON gs.group_id = g.id
+                    WHERE gs.student_id=:studentId
+                    GROUP BY gs.student_id;
+                    """)
+    CourseGroupCountProjection getStudentCourseAndGroupCount(@Param("studentId") UUID studentId);
+
+//    @Query(nativeQuery = true,
+//            value = "select count(*) from (select * from tasks " +
+//                    " where group_id in (select distinct group_id from group_student where student_id=:studentId)) t " +
+//                    " left join (select * from homework where student_id=:studentId) h on h.task_id=t.id " +
+//                    " where h.id IS NULL " +
+//                    " AND t.deadline > CURRENT_TIMESTAMP")
+//    List<Integer> getHomeworkCount(@Param("studentId") UUID studentId);
 }

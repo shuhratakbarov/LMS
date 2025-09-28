@@ -7,10 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import uz.shuhrat.lms.db.domain.Group;
-import uz.shuhrat.lms.db.customDto.teacher.GroupCustomForTeacher;
-import uz.shuhrat.lms.db.customDto.teacher.HomeworkListDto;
+import uz.shuhrat.lms.projection.CourseGroupCountProjection;
+import uz.shuhrat.lms.projection.TeacherGroupSummaryProjection;
+import uz.shuhrat.lms.projection.TeacherHomeworkListProjection;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -48,7 +50,7 @@ public interface TeacherRepository extends JpaRepository<Group, Long> {
                           (select student_id from group_student gs where gs.group_id = (select group_id from tasks where id = :taskId))
                       and u.active
                     """)
-    Page<HomeworkListDto> getHomeworkByTaskId(@Param("taskId") UUID taskId, Pageable pageable);
+    Page<TeacherHomeworkListProjection> getHomeworkByTaskId(@Param("taskId") UUID taskId, Pageable pageable);
 
     @Query(nativeQuery = true, value = """
                     SELECT g.id, g.name AS groupName,
@@ -63,5 +65,15 @@ public interface TeacherRepository extends JpaRepository<Group, Long> {
                                     AND LOWER(CONCAT(g.id, g.name, c.name)) LIKE LOWER(CONCAT('%', :keyword, '%'))
                                     GROUP BY g.id, c.name, c.id
                     """)
-    Page<GroupCustomForTeacher> getGroups(@Param("teacherId") UUID teacherId, @Param("keyword") String keyword, Pageable pageable);
+    Page<TeacherGroupSummaryProjection> getGroups(@Param("teacherId") UUID teacherId, @Param("keyword") String keyword, Pageable pageable);
+
+    @Query(nativeQuery = true,
+            value = """
+                    SELECT COUNT(DISTINCT g.course_id) AS "courseCount",
+                           COUNT(*) AS "groupCount"
+                    FROM groups g
+                    where g.teacher_id=:teacherId
+                    GROUP BY g.teacher_id;
+                    """)
+    CourseGroupCountProjection getTeacherCourseAndGroupCount(@Param("teacherId") UUID teacherId);
 }

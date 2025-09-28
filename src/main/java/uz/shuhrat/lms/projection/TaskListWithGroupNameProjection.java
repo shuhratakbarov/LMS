@@ -1,19 +1,21 @@
-package uz.shuhrat.lms.db.customDto.teacher;
+package uz.shuhrat.lms.projection;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public interface TaskListWithGroupNameProjection {
     UUID getId();
 
-    Date getDeadline();
+    LocalDateTime getDeadline();
 
     BigDecimal getMaxBall();
 
     String getTaskName();
 
     Date getCreatedAt();
+
     Date getUpdatedAt();
 
     String getType();

@@ -1,12 +1,8 @@
-package uz.shuhrat.lms.db.customDto.admin;
+package uz.shuhrat.lms.dto.response;
 
-import lombok.*;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class DashboardStatsResponseDto {
-    private String title;
-    private String suffix;
-    private int value;
+public record DashboardStatsResponseDto(
+        String title,
+        String suffix,
+        int value
+) {
 }

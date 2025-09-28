@@ -1,15 +1,12 @@
-package uz.shuhrat.lms.dto;
+package uz.shuhrat.lms.dto.response;
 
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
 
 @Builder
-@Getter
-@Setter
-public class LoginResponseDto {
-    private String access_token;
-    private String refresh_token;
-    private Long accessExpiration;
-    private UserResponseDto user;
+public record LoginResponseDto(
+        String access_token,
+        String refresh_token,
+        Long accessExpiration,
+        UserResponseDto user
+) {
 }

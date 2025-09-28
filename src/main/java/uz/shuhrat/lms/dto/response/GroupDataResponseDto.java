@@ -1,15 +1,11 @@
-package uz.shuhrat.lms.db.customDto.admin;
+package uz.shuhrat.lms.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.domain.Page;
 import uz.shuhrat.lms.db.domain.Group;
+import uz.shuhrat.lms.projection.UserSummaryProjection;
 
-@Getter
-@Setter
-@AllArgsConstructor
-public class GroupDataDto {
-    private Page<UserCustomDtoForAdmin> page;
-    private Group group;
+public record GroupDataResponseDto(
+        Page<UserSummaryProjection> page,
+        Group group
+) {
 }

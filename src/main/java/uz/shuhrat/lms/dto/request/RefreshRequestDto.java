@@ -1,10 +1,6 @@
-package uz.shuhrat.lms.dto;
+package uz.shuhrat.lms.dto.request;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Setter
-@Getter
-public class RefreshRequestDto {
-    private String refreshToken;
+public record RefreshRequestDto(
+        String refreshToken
+) {
 }

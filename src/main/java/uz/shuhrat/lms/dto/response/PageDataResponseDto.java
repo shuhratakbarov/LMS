@@ -1,13 +1,7 @@
-package uz.shuhrat.lms.dto;
+package uz.shuhrat.lms.dto.response;
 
-import lombok.*;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class PageDataResponseDto<T> {
-    private T content;
-    private Long totalElements;
+public record PageDataResponseDto<T>(
+        T content,
+        Long totalElements
+) {
 }
-

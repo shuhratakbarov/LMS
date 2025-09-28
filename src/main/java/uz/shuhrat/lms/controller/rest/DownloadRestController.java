@@ -1,4 +1,4 @@
-package uz.shuhrat.lms.rest;
+package uz.shuhrat.lms.controller.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;

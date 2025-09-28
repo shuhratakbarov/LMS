@@ -1,11 +1,11 @@
-package uz.shuhrat.lms.rest.admin;
+package uz.shuhrat.lms.controller.rest.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.shuhrat.lms.db.domain.Room;
 import uz.shuhrat.lms.db.repository.RoomRepository;
-import uz.shuhrat.lms.dto.RoomDTO;
+import uz.shuhrat.lms.dto.request.RoomRequestDto;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,12 +46,12 @@ public class RoomRestController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createRoom(@RequestBody RoomDTO roomDTO) {
+    public ResponseEntity<Map<String, Object>> createRoom(@RequestBody RoomRequestDto roomRequestDto) {
         Map<String, Object> response = new HashMap<>();
         try {
             Room room = new Room();
-            room.setName(roomDTO.getName());
-            room.setDescription(roomDTO.getDescription());
+            room.setName(roomRequestDto.name());
+            room.setDescription(roomRequestDto.description());
             room = roomRepository.save(room);
             response.put("success", true);
             response.put("message", "Room created successfully");
@@ -67,13 +67,13 @@ public class RoomRestController {
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> updateRoom(
             @PathVariable("id") Long id,
-            @RequestBody RoomDTO roomDTO) {
+            @RequestBody RoomRequestDto roomRequestDto) {
         Map<String, Object> response = new HashMap<>();
         try {
             Room room = roomRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Room not found"));
-            room.setName(roomDTO.getName());
-            room.setDescription(roomDTO.getDescription());
+            room.setName(roomRequestDto.name());
+            room.setDescription(roomRequestDto.description());
             room = roomRepository.save(room);
             response.put("success", true);
             response.put("message", "Room updated successfully");

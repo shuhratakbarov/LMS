@@ -1,22 +1,27 @@
 package uz.shuhrat.lms.db.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
+import uz.shuhrat.lms.enums.Role;
+import uz.shuhrat.lms.enums.UpdateType;
 
+import java.sql.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "announcements")
+@Table(name = "updates")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Announcement {
+public class Update {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,16 +32,17 @@ public class Announcement {
     @Column(nullable = false)
     private String body;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String type;  // News, 
+    private UpdateType type;
 
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "role_announcement",
-            inverseJoinColumns = @JoinColumn(name = "role_id"),
-            joinColumns = @JoinColumn(name = "announcement_id")
-    )
-    @JsonIgnore
+    @Column(name = "roles", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     private List<Role> roles;
+
+    @CreationTimestamp
+    private Date createdAt;
+
+    @UpdateTimestamp
+    private Date updatedAt;
 }

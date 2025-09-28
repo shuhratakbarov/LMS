@@ -1,4 +1,4 @@
-package uz.shuhrat.lms.rest;
+package uz.shuhrat.lms.controller.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

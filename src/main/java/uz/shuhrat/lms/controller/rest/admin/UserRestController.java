@@ -1,11 +1,9 @@
-package uz.shuhrat.lms.rest.admin;
+package uz.shuhrat.lms.controller.rest.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.shuhrat.lms.db.domain.enums.Role;
-import uz.shuhrat.lms.dto.form.user.CreateUserForm;
-import uz.shuhrat.lms.dto.form.user.UpdateUserForm;
+import uz.shuhrat.lms.dto.request.UserRequestDto;
 import uz.shuhrat.lms.service.admin.UserService;
 
 import java.util.UUID;
@@ -22,7 +20,7 @@ public class UserRestController {
 
     @GetMapping
     public ResponseEntity<?> getUsers(
-            @RequestParam(required = false, name = "role") Role role,
+            @RequestParam(required = false, name = "role") String role,
             @RequestParam(required = false, name = "searching") String keyword,
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "10") int size) throws Exception {
@@ -30,13 +28,13 @@ public class UserRestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody CreateUserForm form) throws Exception {
+    public ResponseEntity<?> save(@RequestBody UserRequestDto form) throws Exception {
         return ResponseEntity.ok(userService.save(form));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> edit(@PathVariable(name = "id") UUID id,
-                                  @RequestBody UpdateUserForm form) throws Exception {
+                                  @RequestBody UserRequestDto form) throws Exception {
         return ResponseEntity.ok(userService.edit(id, form));
     }
 

@@ -1,9 +1,9 @@
-package uz.shuhrat.lms.rest.admin;
+package uz.shuhrat.lms.controller.rest.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.shuhrat.lms.dto.LessonScheduleDTO;
+import uz.shuhrat.lms.dto.request.LessonScheduleRequestDto;
 import uz.shuhrat.lms.service.admin.LessonScheduleService;
 
 @RestController
@@ -25,20 +25,20 @@ public class LessonScheduleController {
     }
 
     @PostMapping("/check-conflict")
-    public ResponseEntity<?> checkConflict(@RequestBody LessonScheduleDTO lessonScheduleDTO,
+    public ResponseEntity<?> checkConflict(@RequestBody LessonScheduleRequestDto lessonScheduleResponseDTO,
                                            @RequestParam(required = false, name = "lesson-schedule-id") Long lessonScheduleId) throws Exception {
-        return ResponseEntity.ok(lessonScheduleService.checkForScheduleConflicts(lessonScheduleDTO, lessonScheduleId));
+        return ResponseEntity.ok(lessonScheduleService.checkForScheduleConflicts(lessonScheduleResponseDTO, lessonScheduleId));
     }
 
     @PostMapping
-    public ResponseEntity<?> createLessonSchedule(@RequestBody LessonScheduleDTO lessonScheduleDTO) throws Exception {
-        return ResponseEntity.ok(lessonScheduleService.createLessonSchedule(lessonScheduleDTO));
+    public ResponseEntity<?> createLessonSchedule(@RequestBody LessonScheduleRequestDto lessonScheduleResponseDTO) throws Exception {
+        return ResponseEntity.ok(lessonScheduleService.createLessonSchedule(lessonScheduleResponseDTO));
     }
 
     @PutMapping("/{lessonScheduleId}")
     public ResponseEntity<?> updateLessonSchedule(@PathVariable Long lessonScheduleId,
-                                                  @RequestBody LessonScheduleDTO lessonScheduleDTO) throws Exception {
-        return ResponseEntity.ok(lessonScheduleService.updateLessonSchedule(lessonScheduleId, lessonScheduleDTO));
+                                                  @RequestBody LessonScheduleRequestDto lessonScheduleResponseDTO) throws Exception {
+        return ResponseEntity.ok(lessonScheduleService.updateLessonSchedule(lessonScheduleId, lessonScheduleResponseDTO));
     }
 
     @DeleteMapping("/{lessonScheduleId}")

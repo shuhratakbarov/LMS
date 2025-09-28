@@ -1,4 +1,4 @@
-package uz.shuhrat.lms.dto.request.password;
+package uz.shuhrat.lms.dto.request;
 
 import javax.validation.constraints.NotBlank;
 

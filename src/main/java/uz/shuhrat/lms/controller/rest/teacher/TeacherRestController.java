@@ -1,12 +1,14 @@
-package uz.shuhrat.lms.rest.teacher;
+package uz.shuhrat.lms.controller.rest.teacher;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import uz.shuhrat.lms.dto.form.CreateTaskForm;
-import uz.shuhrat.lms.dto.form.EvaluateHomework;
+import uz.shuhrat.lms.dto.request.TaskRequestDto;
+import uz.shuhrat.lms.dto.request.EvaluateHomeworkRequestDto;
+import uz.shuhrat.lms.enums.Role;
 import uz.shuhrat.lms.service.admin.LessonScheduleService;
+import uz.shuhrat.lms.service.admin.UpdateService;
 import uz.shuhrat.lms.service.teacher.TaskService;
 import uz.shuhrat.lms.service.teacher.TeacherService;
 
@@ -15,15 +17,22 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/teacher")
 public class TeacherRestController {
+    private final UpdateService updateService;
     private final TaskService taskService;
     private final TeacherService teacherService;
     private final LessonScheduleService lessonScheduleService;
 
     @Autowired
-    public TeacherRestController(TaskService taskService, TeacherService teacherService, LessonScheduleService lessonScheduleService) {
+    public TeacherRestController(UpdateService updateService, TaskService taskService, TeacherService teacherService, LessonScheduleService lessonScheduleService) {
+        this.updateService = updateService;
         this.taskService = taskService;
         this.teacherService = teacherService;
         this.lessonScheduleService = lessonScheduleService;
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<?> getStudentUpdates() {
+        return ResponseEntity.ok(updateService.getByRole(Role.TEACHER));
     }
 
     @GetMapping("/group")
@@ -45,14 +54,14 @@ public class TeacherRestController {
 
     @PostMapping("/task")
     public ResponseEntity<?> createTask(@RequestParam("file") MultipartFile file,
-                                        @ModelAttribute CreateTaskForm form) throws Exception {
+                                        @ModelAttribute TaskRequestDto form) throws Exception {
         return ResponseEntity.ok(taskService.saveTask(file, form));
     }
 
     @PutMapping("/task/{taskId}")
     public ResponseEntity<?> editTask(@PathVariable String taskId,
-                                      @RequestParam("file") MultipartFile file,
-                                      @ModelAttribute CreateTaskForm form) throws Exception {
+                                      @RequestParam(value = "file", required = false) MultipartFile file,
+                                      @ModelAttribute TaskRequestDto form) throws Exception {
         return ResponseEntity.ok(taskService.editTask(UUID.fromString(taskId), form, file));
     }
 
@@ -71,7 +80,7 @@ public class TeacherRestController {
 
     @PatchMapping("/homework/{homeworkId}")
     public ResponseEntity<?> evaluateHomework(@PathVariable UUID homeworkId,
-                                              @RequestBody EvaluateHomework homework) {
+                                              @RequestBody EvaluateHomeworkRequestDto homework) {
         return ResponseEntity.ok(teacherService.evaluateHomework(homeworkId, homework));
     }
 }

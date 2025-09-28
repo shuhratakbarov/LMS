@@ -1,11 +1,7 @@
-package uz.shuhrat.lms.dto;
+package uz.shuhrat.lms.dto.request;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-public class RoomDTO {
-    private String name;
-    private String description;
+public record RoomRequestDto(
+        String name,
+        String description
+) {
 }

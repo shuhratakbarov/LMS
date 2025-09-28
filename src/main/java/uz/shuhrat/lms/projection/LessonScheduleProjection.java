@@ -1,6 +1,6 @@
-package uz.shuhrat.lms.db.customDto.teacher;
+package uz.shuhrat.lms.projection;
 
-public interface LessonScheduleDTO {
+public interface LessonScheduleProjection {
     String getGroupName();
 
     Integer getDay();
@@ -10,4 +10,5 @@ public interface LessonScheduleDTO {
     Integer getEndTime();
 
     String getRoomName();
+    String getCourseName();
 }

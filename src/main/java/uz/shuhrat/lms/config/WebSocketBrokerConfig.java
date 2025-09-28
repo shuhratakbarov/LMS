@@ -2,21 +2,27 @@ package uz.shuhrat.lms.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import uz.shuhrat.lms.component.websocket.WebSocketAuthInterceptor;
-import uz.shuhrat.lms.component.websocket.WebSocketChannelInterceptor;
+import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
+import uz.shuhrat.lms.component.websocket.StompChannelInterceptor;
+import uz.shuhrat.lms.component.websocket.StompHandshakeAuthInterceptor;
+
+import java.security.Principal;
+import java.util.Map;
 
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final WebSocketAuthInterceptor authInterceptor;
-    private final WebSocketChannelInterceptor webSocketChannelInterceptor;
+    private final StompHandshakeAuthInterceptor authInterceptor;
+    private final StompChannelInterceptor stompChannelInterceptor;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -28,15 +34,22 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("http://localhost:3000")
+                .setAllowedOriginPatterns("http://localhost:3000")
                 .addInterceptors(authInterceptor)
-                .withSockJS()
-                .setHeartbeatTime(25000);
+                .setHandshakeHandler(new DefaultHandshakeHandler() {
+                    @Override
+                    protected Principal determineUser(ServerHttpRequest request,
+                                                      WebSocketHandler wsHandler,
+                                                      Map<String, Object> attributes) {
+                        return (Principal) attributes.get("principal");
+                    }
+                })
+                .withSockJS();
     }
+
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(webSocketChannelInterceptor);
+        registration.interceptors(stompChannelInterceptor);
     }
-
 }

@@ -1,4 +1,4 @@
-package uz.shuhrat.lms.rest.admin;
+package uz.shuhrat.lms.controller.rest.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

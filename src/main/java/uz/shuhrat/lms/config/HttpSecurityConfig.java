@@ -31,7 +31,7 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
-public class SecurityConfig {
+public class HttpSecurityConfig {
     private final JwtAuthFilter authFilter;
     private final UserRepository userRepository;
 
@@ -63,6 +63,7 @@ public class SecurityConfig {
                         "/xhr_streaming/**"  // Allow WebSocket connections
                 ).permitAll()
                 .requestMatchers("/user/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
+                .requestMatchers("/user-info").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
                 .requestMatchers("/download/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
                 .requestMatchers("/password/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
                 .requestMatchers("/conversation/**", "/conversation/*", "/conversation/*/message")

@@ -1,16 +1,10 @@
-package uz.shuhrat.lms.dto;
+package uz.shuhrat.lms.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class UserResponseDto {
-    private String firstName;
-    private String lastName;
-    private String roleName;
-    private String username;
-    private int notificationCount;
+public record UserResponseDto(
+        String firstName,
+        String lastName,
+        String roleName,
+        String username,
+        int notificationCount
+) {
 }

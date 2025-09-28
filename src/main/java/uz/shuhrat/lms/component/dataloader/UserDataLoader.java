@@ -1,26 +1,21 @@
-package uz.shuhrat.lms.component;
+package uz.shuhrat.lms.component.dataloader;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import uz.shuhrat.lms.db.domain.*;
-import uz.shuhrat.lms.db.domain.enums.Role;
+import uz.shuhrat.lms.enums.Role;
 import uz.shuhrat.lms.db.repository.admin.UserRepository;
 
 import java.sql.Date;
 import java.util.UUID;
 
 @Component
-public class DataLoader implements CommandLineRunner {
+@RequiredArgsConstructor
+public class UserDataLoader implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public DataLoader(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     public void run(String... args) {

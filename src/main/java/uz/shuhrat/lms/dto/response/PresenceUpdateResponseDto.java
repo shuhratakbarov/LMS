@@ -1,2 +1,6 @@
-package uz.shuhrat.lms.dto.response;public record PresenceUpdateResponseDto() {
-}
+package uz.shuhrat.lms.dto.response;
+
+import java.time.Instant;
+
+public record PresenceUpdateResponseDto(String username, boolean isOnline, Instant lastSeen) {}
+

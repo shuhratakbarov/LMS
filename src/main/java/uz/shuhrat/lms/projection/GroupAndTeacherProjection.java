@@ -1,6 +1,6 @@
-package uz.shuhrat.lms.db.customDto.admin;
+package uz.shuhrat.lms.projection;
 
-public interface ViewGroupAndTeacherProjection {
+public interface GroupAndTeacherProjection {
     String getGroupName();
 
     String getTeacherName();

@@ -1,13 +1,10 @@
 package uz.shuhrat.lms.service.admin;
 
-import uz.shuhrat.lms.dto.AttendanceDTO;
-import uz.shuhrat.lms.dto.MarkAttendanceDTO;
-import uz.shuhrat.lms.dto.ResponseDto;
-
-import java.util.List;
+import uz.shuhrat.lms.dto.GeneralResponseDto;
+import uz.shuhrat.lms.dto.request.MarkAttendanceRequestDto;
 
 public interface AttendanceService {
-    ResponseDto<?> markAttendance(MarkAttendanceDTO markAttendanceDTO) throws Exception;
+    GeneralResponseDto<?> markAttendance(MarkAttendanceRequestDto markAttendanceRequestDto) throws Exception;
 
-    ResponseDto<?> getAttendanceByLessonInstance(Long lessonInstanceId);
+    GeneralResponseDto<?> getAttendanceByLessonInstance(Long lessonInstanceId);
 }

@@ -1,17 +1,11 @@
-package uz.shuhrat.lms.dto;
+package uz.shuhrat.lms.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import uz.shuhrat.lms.dto.request.AttendanceRequestDto;
 
 import java.util.List;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class MarkAttendanceDTO {
-    Long lessonInstanceId;
-    List<AttendanceDTO> attendanceDTOS;
+public record MarkAttendanceRequestDto(
+        Long lessonInstanceId,
+        List<AttendanceRequestDto> attendanceRequestDtoList
+) {
 }

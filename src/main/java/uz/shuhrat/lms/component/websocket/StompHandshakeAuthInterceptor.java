@@ -1,11 +1,15 @@
 package uz.shuhrat.lms.component.websocket;
 
+import jakarta.annotation.Nullable;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
@@ -14,14 +18,13 @@ import uz.shuhrat.lms.db.domain.User;
 import uz.shuhrat.lms.db.repository.admin.TokenBlacklistRepository;
 import uz.shuhrat.lms.db.repository.admin.UserRepository;
 
-import java.util.List;
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class WebSocketAuthInterceptor implements HandshakeInterceptor {
-
+public class StompHandshakeAuthInterceptor implements HandshakeInterceptor {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final TokenBlacklistRepository blacklistRepository;
@@ -29,68 +32,58 @@ public class WebSocketAuthInterceptor implements HandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) {
-
         String token = extractTokenFromRequest(request);
         if (token == null) {
             log.warn("WebSocket handshake failed: No token provided");
             return false;
         }
 
-        try {
-            // Blacklist check
-            if (blacklistRepository.findByToken(token).isPresent()) {
-                log.warn("WebSocket handshake failed: Token is blacklisted");
-                return false;
-            }
-
-            String username = jwtService.extractUsername(token);
-            if (username == null) {
-                log.warn("WebSocket handshake failed: Invalid token");
-                return false;
-            }
-
-            User user = userRepository.findByUsername(username).orElse(null);
-            if (user == null) {
-                log.warn("WebSocket handshake failed: User not found");
-                return false;
-            }
-
-            if (!jwtService.validateToken(token, user)) {
-                log.warn("WebSocket handshake failed: Token validation failed");
-                return false;
-            }
-
-            // Store attributes for ChannelInterceptor
-            attributes.put("username", username);
-            attributes.put("userId", user.getId().toString());
-            attributes.put("role", user.getRole().name());
-
-            log.info("WebSocket handshake successful for user: {}", username);
-            return true;
-
-        } catch (Exception e) {
-            log.error("WebSocket handshake error: {}", e.getMessage(), e);
+        if (blacklistRepository.findByToken(token).isPresent()) {
+            log.warn("WebSocket handshake failed: Token is blacklisted");
             return false;
         }
+
+        String username = jwtService.extractUsername(token);
+        if (username == null) {
+            log.warn("WebSocket handshake failed: Invalid token");
+            return false;
+        }
+
+        UserDetails userDetails = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(username));
+
+        if (userDetails == null || !jwtService.validateToken(token, userDetails)) {
+            log.warn("WebSocket handshake failed: User not found or invalid token");
+            return false;
+        }
+        UsernamePasswordAuthenticationToken principal =
+                new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+        attributes.put("principal", principal);
+
+        log.info("WebSocket handshake successful for userDetails: {}", username);
+        return true;
     }
 
+
     @Override
-    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
-                               WebSocketHandler wsHandler, Exception exception) {
+    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
         log.info("Handshake completed: {}", request.getURI());
     }
 
     private String extractTokenFromRequest(ServerHttpRequest request) {
         if (request instanceof ServletServerHttpRequest servletRequest) {
-            List<String> headers = servletRequest.getServletRequest().getHeaders("Authorization") != null
-                    ? List.of(servletRequest.getServletRequest().getHeaders("Authorization").nextElement())
-                    : null;
-
-            if (headers != null && !headers.isEmpty()) {
-                String bearerToken = headers.get(0);
-                if (bearerToken.startsWith("Bearer ")) {
-                    return bearerToken.substring(7);
-                }
+            HttpServletRequest httpRequest = servletRequest.getServletRequest();
+            String paramToken = httpRequest.getParameter("token");
+            if (paramToken != null && !paramToken.isEmpty()) {
+                return paramToken;
+            }
+            String bearerToken = httpRequest.getHeader("Authorization");
+            if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+                return bearerToken.substring(7);
             }
         }
         return null;

@@ -1,16 +1,10 @@
-package uz.shuhrat.lms.rest.teacher;
+package uz.shuhrat.lms.controller.rest.teacher;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.shuhrat.lms.db.domain.Attendance;
-import uz.shuhrat.lms.dto.AttendanceDTO;
-import uz.shuhrat.lms.dto.MarkAttendanceDTO;
+import uz.shuhrat.lms.dto.request.MarkAttendanceRequestDto;
 import uz.shuhrat.lms.service.admin.AttendanceService;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/teacher/attendance")
@@ -23,8 +17,8 @@ public class AttendanceController {
     }
 
     @PostMapping
-    public ResponseEntity<?> markAttendance(@RequestBody MarkAttendanceDTO markAttendanceDTO) throws Exception {
-        return ResponseEntity.ok(attendanceService.markAttendance(markAttendanceDTO));
+    public ResponseEntity<?> markAttendance(@RequestBody MarkAttendanceRequestDto markAttendanceRequestDto) throws Exception {
+        return ResponseEntity.ok(attendanceService.markAttendance(markAttendanceRequestDto));
     }
 
     @GetMapping("/lesson/{lessonInstanceId}")

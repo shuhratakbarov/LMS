@@ -1,4 +1,4 @@
-package uz.shuhrat.lms.db.customDto.teacher;
+package uz.shuhrat.lms.projection;
 
 public interface TeacherGroupSummaryProjection {
     Long getId();

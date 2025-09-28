@@ -1,9 +1,9 @@
-package uz.shuhrat.lms.rest.admin;
+package uz.shuhrat.lms.controller.rest.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.shuhrat.lms.dto.form.CreateCourseForm;
+import uz.shuhrat.lms.dto.request.CourseRequestDto;
 import uz.shuhrat.lms.service.admin.CourseService;
 
 @RestController
@@ -24,13 +24,13 @@ public class CourseRestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createCourse(@RequestBody CreateCourseForm form) {
+    public ResponseEntity<?> createCourse(@RequestBody CourseRequestDto form) {
         return ResponseEntity.ok(courseService.save(form));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> editCourse(@PathVariable Long id,
-                                        @RequestBody CreateCourseForm form) {
+                                        @RequestBody CourseRequestDto form) {
         return ResponseEntity.ok(courseService.edit(id, form));
     }
 

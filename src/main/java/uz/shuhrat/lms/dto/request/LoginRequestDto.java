@@ -1,12 +1,9 @@
-package uz.shuhrat.lms.dto.form;
+package uz.shuhrat.lms.dto.request;
 
-import lombok.*;
+import javax.validation.constraints.NotBlank;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-public class LoginForm {
-    private String username;
-    private String password;
+public record LoginRequestDto(
+        @NotBlank String username,
+        @NotBlank String password
+) {
 }

@@ -1,14 +1,14 @@
 package uz.shuhrat.lms.dto.response;
 
-import java.time.Instant;
+import uz.shuhrat.lms.enums.ConversationOriginType;
+
 import java.util.UUID;
 
-public record ConversationSummaryDto(
+public record ConversationSearchResultDto(
         UUID id,
-        boolean isGroup,
         String name,
-        String lastMessageSnippet,
-        Instant lastMessageAt,
-        int unreadCount
+        String username,
+        ConversationOriginType originType,
+        boolean isGroup,
+        String role
 ) {}
-

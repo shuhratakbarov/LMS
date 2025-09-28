@@ -1,20 +1,14 @@
-package uz.shuhrat.lms.dto;
-
-import lombok.*;
+package uz.shuhrat.lms.dto.response;
 
 import java.sql.Date;
-import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class GroupResponseDto {
-    private Long id;
-    private String name;
-    private String description;
-    private String courseName;
-    private String teacherUsername;
-    private Date createdAt;
-    private Date updatedAt;
+public record GroupResponseDto(
+        Long id,
+        String name,
+        String description,
+        String courseName,
+        String teacherUsername,
+        Date createdAt,
+        Date updatedAt
+) {
 }

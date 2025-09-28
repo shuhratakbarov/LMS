@@ -1,21 +1,23 @@
-package uz.shuhrat.lms.db.customDto.student;
+package uz.shuhrat.lms.projection;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-public interface StudentHomeworkDto {
+public interface StudentHomeworkProjection {
     UUID getTaskId();
 
     BigDecimal getMaxBall();
 
-    Date getDeadline();
+    LocalDateTime getDeadline();
 
     String getTaskFileName();
 
     String getTaskFileId();
 
     String getTaskName();
+
     String getType();
 
     Long getTaskFileSize();

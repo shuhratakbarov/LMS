@@ -1,6 +1,7 @@
 package uz.shuhrat.lms.service.file.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -12,9 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 import uz.shuhrat.lms.db.domain.File;
 import uz.shuhrat.lms.db.domain.Group;
 import uz.shuhrat.lms.db.domain.User;
+import uz.shuhrat.lms.enums.Role;
 import uz.shuhrat.lms.db.repository.admin.GroupRepository;
 import uz.shuhrat.lms.db.repository.file.FileRepository;
-import uz.shuhrat.lms.dto.ResponseDto;
+import uz.shuhrat.lms.dto.GeneralResponseDto;
 import uz.shuhrat.lms.helper.SecurityHelper;
 import uz.shuhrat.lms.service.file.FileService;
 
@@ -25,13 +27,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class FileServiceImpl implements FileService {
-    private final String filePath = "C:\\lms-test\\files";
+    @Value("${app.file.storage.path}")
+    private String filePath;
     private final FileRepository fileRepository;
     private final GroupRepository groupRepository;
 
@@ -42,7 +44,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public ResponseDto<?> save(MultipartFile file) {
+    public GeneralResponseDto<?> save(MultipartFile file) {
         Path root = Paths.get(this.filePath);
         File f = new File();
         f.setPkey(UUID.randomUUID().toString().replaceAll("-", "").toUpperCase());
@@ -55,26 +57,26 @@ public class FileServiceImpl implements FileService {
             f = fileRepository.save(f);
         } catch (Exception e) {
             System.out.println("File Service save method: " + e.getMessage());
-            return new ResponseDto<>(false, e.getMessage());
+            return new GeneralResponseDto<>(false, e.getMessage());
         }
         if (f.getPkey() != null) {
-            return new ResponseDto<>(true, "ok", f);
+            return new GeneralResponseDto<>(true, "ok", f);
         }
-        return new ResponseDto<>(false, "error while saving file");
+        return new GeneralResponseDto<>(false, "error while saving file");
 
     }
 
     @Override
-    public ResponseDto<?> delete(String pkey, String fileName) {
+    public GeneralResponseDto<?> delete(String pkey, String fileName) {
         String path = filePath + "\\" + pkey + "-" + fileName;
         Path filePath = Paths.get(path);
         try {
             Files.deleteIfExists(filePath);
         } catch (IOException e) {
             System.out.println("File Service delete method: " + e.getMessage());
-            return new ResponseDto<>(false, "Fayl o'chirishda xatolik yuz berdi: " + e.getMessage());
+            return new GeneralResponseDto<>(false, "Fayl o'chirishda xatolik yuz berdi: " + e.getMessage());
         }
-        return new ResponseDto<>(true, "Fayl muvaffaqiyatli o'chirildi");
+        return new GeneralResponseDto<>(true, "Fayl muvaffaqiyatli o'chirildi");
     }
 
     @Override
@@ -84,14 +86,14 @@ public class FileServiceImpl implements FileService {
             if (currentUser == null) {
                 throw new Exception("Autentifikatsiyadan o'tishingiz kerak");
             }
-            if (Objects.equals(currentUser.getRole().getName(), "ROLE_TEACHER")) {
+            if (currentUser.getRole() == Role.TEACHER) {
                 Optional<Group> groupOptional = groupRepository.findById(groupId);
                 if (groupOptional.isPresent() && groupOptional.get().getTeacher().getId().equals(currentUser.getId())) {
                     return returnFile(fileId);
                 } else {
                     throw new Exception("Error");
                 }
-            } else if (Objects.equals(currentUser.getRole().getName(), "ROLE_STUDENT")) {
+            } else if (currentUser.getRole() == Role.STUDENT) {
                 Optional<Group> groupOptional = groupRepository.findById(groupId);
                 if (groupOptional.isPresent()) {
                     List<User> groupStudents = groupOptional.get().getStudents();
@@ -106,14 +108,14 @@ public class FileServiceImpl implements FileService {
                 } else {
                     throw new Exception("Error");
                 }
-            } else if (Objects.equals(currentUser.getRole().getName(), "ROLE_ADMIN")) {
+            } else if (currentUser.getRole() == Role.ADMIN) {
                 return returnFile(fileId);
             } else {
                 throw new Exception("Autentifikatsiyadn o'ting!");
             }
         } catch (Exception e) {
             System.out.println("File Service download method: " + e.getMessage());
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 

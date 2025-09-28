@@ -6,12 +6,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import uz.shuhrat.lms.db.customDto.student.StudentDto;
-import uz.shuhrat.lms.db.customDto.student.StudentHomeworkDto;
-import uz.shuhrat.lms.db.customDto.teacher.GroupCustomForTeacher;
+import uz.shuhrat.lms.projection.GroupsOfStudentProjection;
+import uz.shuhrat.lms.projection.StudentHomeworkProjection;
 import uz.shuhrat.lms.db.domain.User;
+import uz.shuhrat.lms.enums.Role;
 import uz.shuhrat.lms.db.repository.student.StudentRoleRepository;
-import uz.shuhrat.lms.dto.ResponseDto;
+import uz.shuhrat.lms.dto.GeneralResponseDto;
 import uz.shuhrat.lms.helper.SecurityHelper;
 import uz.shuhrat.lms.service.student.StudentService;
 
@@ -25,35 +25,41 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public ResponseDto<?> getStudentGroupList(String keyword, int page, int size) {
+    public GeneralResponseDto<?> getStudentGroupList(String keyword, int page, int size) throws Exception {
         User currentUser = SecurityHelper.getCurrentUser();
-        if (currentUser != null && currentUser.isActive() && currentUser.getRole().getName().equals("ROLE_STUDENT")) {
+        if (currentUser == null) {
+            throw new Exception("Authentifikatsiyadan o'ting!");
+        }
+        if (currentUser.isActive() && currentUser.getRole() == Role.STUDENT) {
             Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-            Page<StudentDto> studentDtoPage = studentRoleRepository.getGroupsOfStudent(currentUser.getId(), keyword, pageable);
-            return new ResponseDto<>(true, "ok", studentDtoPage);
+            Page<GroupsOfStudentProjection> studentDtoPage = studentRoleRepository.getGroupsOfStudent(currentUser.getId(), keyword, pageable);
+            return new GeneralResponseDto<>(true, "ok", studentDtoPage);
         }
-        return new ResponseDto<>(false, "Group ro'yxatini olishga ruxsat yo'q!!!");
+        return new GeneralResponseDto<>(false, "Group ro'yxatini olishga ruxsat yo'q!!!");
     }
 
     @Override
-    public ResponseDto<?> getHomeworksOfStudent(Long groupId, int page, int size) {
+    public GeneralResponseDto<?> getHomeworksOfStudent(Long groupId, int page, int size) throws Exception {
         User currentUser = SecurityHelper.getCurrentUser();
-        if (currentUser != null && currentUser.isActive() && currentUser.getRole().getName().equals("ROLE_STUDENT")) {
+        if (currentUser == null) {
+            throw new Exception("Authentifikatsiyadan o'ting!");
+        }
+        if (currentUser.isActive() && currentUser.getRole() == Role.STUDENT) {
             Pageable pageable = PageRequest.of(page, size);
-            Page<StudentHomeworkDto> studentHomeworkDtoPage = studentRoleRepository.getHomeworksOfStudent(groupId, currentUser.getId(), pageable);
-            return new ResponseDto<>(true, "ok", studentHomeworkDtoPage);
+            Page<StudentHomeworkProjection> studentHomeworkDtoPage = studentRoleRepository.getHomeworksOfStudent(groupId, currentUser.getId(), pageable);
+            return new GeneralResponseDto<>(true, "ok", studentHomeworkDtoPage);
         } else {
-            return new ResponseDto<>(false, "Urinma foydasi yo'q!");
+            return new GeneralResponseDto<>(false, "You are not allowed");
         }
     }
 
     @Override
-    public ResponseDto<?> getHomeworkCount() {
+    public GeneralResponseDto<?> getHomeworkNotification() {
         User student = SecurityHelper.getCurrentUser();
         if (student != null) {
-            return new ResponseDto<>(true, "Bajarilmagan topshiriqlar soni", studentRoleRepository.getHomeworkCount(student.getId()));
+            return new GeneralResponseDto<>(true, "Bajarilmagan topshiriqlar", studentRoleRepository.getHomeworkNotificationDetails(student.getId()));
         } else {
-            return new ResponseDto<>(false, "Error occurred");
+            return new GeneralResponseDto<>(false, "Error occurred");
         }
     }
 }

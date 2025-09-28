@@ -20,7 +20,8 @@
                                           \::/    /        \::/    /                \::/    /
                                            \/____/          \/____/                  \/____/
 
+
+
                                                       ${spring.application.name} ${spring.application.version}
                                                       Powered by Spring Boot ${spring-boot.version}
-
 

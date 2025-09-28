@@ -1,4 +1,4 @@
-package uz.shuhrat.lms.rest.student;
+package uz.shuhrat.lms.controller.rest.student;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import uz.shuhrat.lms.enums.Role;
 import uz.shuhrat.lms.service.admin.LessonScheduleService;
+import uz.shuhrat.lms.service.admin.UpdateService;
 import uz.shuhrat.lms.service.student.HomeworkService;
 
 import uz.shuhrat.lms.service.student.StudentService;
@@ -23,12 +25,19 @@ public class StudentRestController {
     private final StudentService studentService;
     private final HomeworkService homeworkService;
     private final LessonScheduleService lessonScheduleService;
+    private final UpdateService updateService;
 
     @Autowired
-    public StudentRestController(StudentService studentService, HomeworkService homeworkService, LessonScheduleService lessonScheduleService) {
+    public StudentRestController(StudentService studentService, HomeworkService homeworkService, LessonScheduleService lessonScheduleService, UpdateService updateService) {
         this.studentService = studentService;
         this.homeworkService = homeworkService;
         this.lessonScheduleService = lessonScheduleService;
+        this.updateService = updateService;
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<?> getStudentUpdates() {
+        return ResponseEntity.ok(updateService.getByRole(Role.STUDENT));
     }
 
     @GetMapping("/group")
@@ -43,9 +52,9 @@ public class StudentRestController {
         return ResponseEntity.ok(lessonScheduleService.getStudentSchedule());
     }
 
-    @GetMapping("/get-count")
-    public ResponseEntity<?> getCount() {
-        return ResponseEntity.ok(studentService.getHomeworkCount());
+    @GetMapping("/homework/notification")
+    public ResponseEntity<?> getHomeworkNotification() {
+        return ResponseEntity.ok(studentService.getHomeworkNotification());
     }
 
     @GetMapping("/homework")
