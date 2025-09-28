@@ -3,7 +3,7 @@ package uz.shuhrat.lms.db.repository.teacher;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import uz.shuhrat.lms.db.customDto.teacher.TaskListWithGroupName;
+import uz.shuhrat.lms.projection.TaskListWithGroupNameProjection;
 import uz.shuhrat.lms.db.domain.Task;
 
 import java.util.List;
@@ -35,5 +35,5 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
                     ORDER BY t.deadline
                     """
     )
-    List<TaskListWithGroupName> getGroupTasks(@Param("groupId") Long groupId);
+    List<TaskListWithGroupNameProjection> getGroupTasks(@Param("groupId") Long groupId);
 }

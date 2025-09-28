@@ -1,0 +1,66 @@
+package uz.shuhrat.lms.component.dataloader;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import uz.shuhrat.lms.db.domain.*;
+import uz.shuhrat.lms.enums.Role;
+import uz.shuhrat.lms.db.repository.admin.UserRepository;
+
+import java.sql.Date;
+import java.util.UUID;
+
+@Component
+@RequiredArgsConstructor
+public class UserDataLoader implements CommandLineRunner {
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public void run(String... args) {
+            User admin = User.builder()
+                    .id(UUID.fromString("330833eb-58df-4935-a49c-84c29ad996c3"))
+                    .firstName("Nozimjon")
+                    .lastName("Qoraboyev")
+                    .email("qoraboyev@gmail.com")
+                    .phone("900196171")
+                    .address("Andijon viloyati")
+                    .birthDate(Date.valueOf("1998-03-25"))
+                    .password(passwordEncoder.encode("12345"))
+                    .username("nozimjon")
+                    .role(Role.ADMIN)
+                    .build();
+            User teacher = User.builder()
+                    .id(UUID.fromString("5f1b295f-3bd1-45cf-adb7-19fea72b5c79"))
+                    .firstName("Shuhrat")
+                    .lastName("Akbarov")
+                    .email("akbarov@gmail.com")
+                    .phone("914686946")
+                    .address("Qashqadaryo viloyati")
+                    .birthDate(Date.valueOf("2004-11-24"))
+                    .password(passwordEncoder.encode("12345"))
+                    .username("teacher")
+                    .role(Role.TEACHER)
+                    .build();
+            User student = User.builder()
+                    .id(UUID.fromString("e9e5e8bf-beac-465a-aa6a-9d17802d5941"))
+                    .firstName("Zafar")
+                    .lastName("Ziyatov")
+                    .email("ziyatov@gmail.com")
+                    .phone("911234567")
+                    .address("Samarqand viloyati")
+                    .birthDate(Date.valueOf("2003-11-24"))
+                    .password(passwordEncoder.encode("12345"))
+                    .username("student")
+                    .role(Role.STUDENT)
+                    .build();
+            try {
+//                userRepository.save(admin);
+//                userRepository.save(teacher);
+//                userRepository.save(student);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+    }
+}

@@ -1,16 +1,21 @@
 package uz.shuhrat.lms.service.admin;
 
-import uz.shuhrat.lms.dto.ResponseDto;
-import uz.shuhrat.lms.dto.LessonScheduleDTO;
+import uz.shuhrat.lms.dto.GeneralResponseDto;
+import uz.shuhrat.lms.dto.request.LessonScheduleRequestDto;
+import uz.shuhrat.lms.dto.response.LessonScheduleResponseDto;
 
 public interface LessonScheduleService {
-    ResponseDto<?> getAdminSchedule(String keyword, int page, int size);
+    GeneralResponseDto<?> getAdminSchedule(String keyword, int page, int size);
 
-    ResponseDto<?> checkForScheduleConflicts(LessonScheduleDTO lessonScheduleDTO, Long lessonScheduleId) throws Exception;
+    GeneralResponseDto<?> getTeacherSchedule();
 
-    ResponseDto<?> createLessonSchedule(LessonScheduleDTO lessonScheduleDTO) throws Exception;
+    GeneralResponseDto<?> getStudentSchedule();
 
-    ResponseDto<?> updateLessonSchedule(Long scheduleId, LessonScheduleDTO scheduleDTO) throws Exception;
+    GeneralResponseDto<?> checkForScheduleConflicts(LessonScheduleRequestDto lessonScheduleResponseDTO, Long lessonScheduleId) throws Exception;
 
-    ResponseDto<?> deleteLessonSchedule(Long scheduleId);
+    GeneralResponseDto<?> createLessonSchedule(LessonScheduleRequestDto lessonScheduleResponseDTO) throws Exception;
+
+    GeneralResponseDto<?> updateLessonSchedule(Long scheduleId, LessonScheduleRequestDto scheduleDTO) throws Exception;
+
+    GeneralResponseDto<?> deleteLessonSchedule(Long scheduleId);
 }

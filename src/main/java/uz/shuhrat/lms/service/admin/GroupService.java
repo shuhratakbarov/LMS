@@ -1,28 +1,28 @@
 package uz.shuhrat.lms.service.admin;
 
-import uz.shuhrat.lms.dto.ResponseDto;
-import uz.shuhrat.lms.dto.form.CreateGroupForm;
+import uz.shuhrat.lms.dto.GeneralResponseDto;
+import uz.shuhrat.lms.dto.request.GroupRequestDto;
 
 import java.util.UUID;
 
 public interface GroupService {
-    ResponseDto<?> save(CreateGroupForm form) throws Exception;
+    GeneralResponseDto<?> save(GroupRequestDto form) throws Exception;
 
-    ResponseDto<?> edit(Long id, CreateGroupForm form) throws Exception;
+    GeneralResponseDto<?> edit(Long id, GroupRequestDto form) throws Exception;
 
-    ResponseDto<?> delete(Long id) throws Exception;
+    GeneralResponseDto<?> delete(Long id) throws Exception;
 
-    ResponseDto<?> getGroupList(String searching, int page, int size) throws Exception;
+    GeneralResponseDto<?> getGroupList(String searching, int page, int size) throws Exception;
 
-    ResponseDto<?> findGroupsByTeacherId(UUID teacherId) throws Exception;
+    GeneralResponseDto<?> findGroupsByTeacherId(UUID teacherId) throws Exception;
 
-    ResponseDto<?> getGroupsAndTeacherByStudentId(UUID userId) throws Exception;
+    GeneralResponseDto<?> getGroupsAndTeacherByStudentId(UUID userId) throws Exception;
 
-    ResponseDto<?> findAllByCourseId(Long courseId, int page, int size) throws Exception;
+    GeneralResponseDto<?> findAllByCourseId(Long courseId, int page, int size) throws Exception;
 
-    ResponseDto<?> addStudentToGroup(UUID studentId, Long groupId) throws Exception;
+    GeneralResponseDto<?> addStudentToGroup(UUID studentId, Long groupId) throws Exception;
 
-    ResponseDto<?> removeStudentFromGroup(UUID studentId, Long groupId);
+    GeneralResponseDto<?> removeStudentFromGroup(UUID studentId, Long groupId);
 
-    ResponseDto<?> getGroupIdAndName();
+    GeneralResponseDto<?> getGroupIdAndName();
 }

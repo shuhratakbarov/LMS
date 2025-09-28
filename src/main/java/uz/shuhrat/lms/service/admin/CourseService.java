@@ -1,16 +1,16 @@
 package uz.shuhrat.lms.service.admin;
 
-import uz.shuhrat.lms.dto.ResponseDto;
-import uz.shuhrat.lms.dto.form.CreateCourseForm;
+import uz.shuhrat.lms.dto.GeneralResponseDto;
+import uz.shuhrat.lms.dto.request.CourseRequestDto;
 
 public interface CourseService {
-    ResponseDto<?> save(CreateCourseForm form);
+    GeneralResponseDto<?> save(CourseRequestDto form);
 
-    ResponseDto<?> edit(Long id, CreateCourseForm form);
+    GeneralResponseDto<?> edit(Long id, CourseRequestDto form);
 
-    ResponseDto<?> delete(Long id);
+    GeneralResponseDto<?> delete(Long id);
 
-    ResponseDto<?> findCoursesForSelect();
+    GeneralResponseDto<?> findCoursesForSelect();
 
-    ResponseDto<?> getCourseList(String searching, int page, int size) throws Exception;
+    GeneralResponseDto<?> getCourseList(String searching, int page, int size) throws Exception;
 }
