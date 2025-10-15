@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -36,7 +37,7 @@ public class Task {
     private Group group;
 
     @Column(nullable = false)
-    private Date deadline;
+    private LocalDateTime deadline;
 
     @Column(nullable = false)
     private BigDecimal maxBall;

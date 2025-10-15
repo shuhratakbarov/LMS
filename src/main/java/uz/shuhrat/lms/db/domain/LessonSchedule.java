@@ -3,6 +3,10 @@ package uz.shuhrat.lms.db.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.sql.Date;
 
 @Setter
 @Getter
@@ -29,4 +33,10 @@ public class LessonSchedule {
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
+
+    @CreationTimestamp
+    private Date createdAt;
+
+    @UpdateTimestamp
+    private Date updatedAt;
 }

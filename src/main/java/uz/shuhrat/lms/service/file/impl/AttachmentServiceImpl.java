@@ -13,7 +13,7 @@ import uz.shuhrat.lms.db.domain.attachment.Attachment;
 import uz.shuhrat.lms.db.domain.attachment.AttachmentContent;
 import uz.shuhrat.lms.db.repository.file.AttachmentContentRepository;
 import uz.shuhrat.lms.db.repository.file.AttachmentRepository;
-import uz.shuhrat.lms.dto.ResponseDto;
+import uz.shuhrat.lms.dto.GeneralResponseDto;
 import uz.shuhrat.lms.service.file.AttachmentService;
 
 import java.io.IOException;
@@ -33,13 +33,13 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public ResponseDto<?> findAll() {
+    public GeneralResponseDto<?> findAll() {
         List<Attachment> list = attachmentRepository.findAll();
-        return new ResponseDto<>(true, "ok", list);
+        return new GeneralResponseDto<>(true, "ok", list);
     }
 
     @Transactional
-    public ResponseEntity<ResponseDto<?>> uploadFile(MultipartFile file) {
+    public ResponseEntity<GeneralResponseDto<?>> uploadFile(MultipartFile file) {
         try {
             Attachment attachment = new Attachment();
             attachment.setName(file.getOriginalFilename());
@@ -50,10 +50,10 @@ public class AttachmentServiceImpl implements AttachmentService {
             attachmentContent.setContentType(file.getContentType());
             attachmentContent.setBytes(file.getBytes());
             contentRepository.save(attachmentContent);
-            return ResponseEntity.ok().body(new ResponseDto<>(true, "Fayl muvaffaqiyatli yuklandi"));
+            return ResponseEntity.ok().body(new GeneralResponseDto<>(true, "Fayl muvaffaqiyatli yuklandi"));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto<>(false, "Server xatosi: " + e.getMessage()));
+                    .body(new GeneralResponseDto<>(false, "Server xatosi: " + e.getMessage()));
         }
     }
 
@@ -85,7 +85,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Transactional
-    public ResponseEntity<ResponseDto<?>> deleteFile(UUID fileId) {
+    public ResponseEntity<GeneralResponseDto<?>> deleteFile(UUID fileId) {
         try {
             Optional<Attachment> attachmentOptional = attachmentRepository.findById(fileId);
             if (attachmentOptional.isEmpty()) {
@@ -96,13 +96,13 @@ public class AttachmentServiceImpl implements AttachmentService {
             if (contentOptional.isPresent()) {
                 contentRepository.deleteById(contentOptional.get().getPkey());
                 attachmentRepository.deleteById(attachment.getPkey());
-                return ResponseEntity.ok().body(new ResponseDto<>(true, "Fayl muvaffaqiyatli o'chirildi"));
+                return ResponseEntity.ok().body(new GeneralResponseDto<>(true, "Fayl muvaffaqiyatli o'chirildi"));
 
             }
-            return ResponseEntity.ok().body(new ResponseDto<>(false, "Fayl o'chirilmadi"));
+            return ResponseEntity.ok().body(new GeneralResponseDto<>(false, "Fayl o'chirilmadi"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto<>(false, "Server xatosi: " + e.getMessage()));
+                    .body(new GeneralResponseDto<>(false, "Server xatosi: " + e.getMessage()));
         }
     }
 }

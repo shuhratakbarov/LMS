@@ -1,0 +1,61 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    generate-ddl: true
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+        jdbc:
+          time_zone: UTC
+
+  servlet:
+    multipart:
+      max-request-size: 20MB
+      max-file-size: 20MB
+      location:
+  application:
+    name: LMS
+    version: 1.0.0
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USER}
+    password: ${MAIL_PASS}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: smtp.gmail.com
+
+jwt:
+  secret:
+    key: ${JWT_SECRET}
+  access:
+    expiration: 3600000
+  refresh:
+    expiration: 604800000
+
+app:
+  file:
+    storage:
+      path: /var/lms/files
+
+password:
+  reset:
+    link: https://shuhratakbarov.uz/reset-password
+    token:
+      expiration: 86400000

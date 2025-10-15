@@ -8,12 +8,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import uz.shuhrat.lms.db.domain.Course;
 import uz.shuhrat.lms.db.repository.admin.CourseRepository;
-import uz.shuhrat.lms.dto.PageDataResponseDto;
-import uz.shuhrat.lms.dto.ResponseDto;
-import uz.shuhrat.lms.dto.form.CreateCourseForm;
+import uz.shuhrat.lms.dto.GeneralResponseDto;
+import uz.shuhrat.lms.dto.request.CourseRequestDto;
 import uz.shuhrat.lms.service.admin.CourseService;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,82 +24,71 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public ResponseDto<?> save(CreateCourseForm form) {
+    public GeneralResponseDto<?> save(CourseRequestDto form) {
         try {
-            if (form == null || form.getName() == null || form.getDescription() == null) {
-                throw new Exception("Ma'lumotlar to'liq emas!!!");
-            }
             Course course = new Course();
-            course.setName(form.getName());
-            course.setDuration(form.getDuration());
-            course.setDescription(form.getDescription());
-            course = courseRepository.save(course);
-            if (course.getId() == null) {
-                return new ResponseDto<>(false, "Bazaga saqalanmadi");
-            }
-            return new ResponseDto<>(true, "ok");
+            course.setName(form.name());
+            course.setDuration(form.duration());
+            course.setDescription(form.description());
+            courseRepository.save(course);
+            return new GeneralResponseDto<>(true, "ok");
         } catch (Exception e) {
             System.out.println("Course Service save method: " + e.getMessage());
-            return new ResponseDto<>(false, e.getMessage());
+            return new GeneralResponseDto<>(false, e.getMessage());
         }
     }
 
     @Override
-    public ResponseDto<?> edit(Long id, CreateCourseForm form) {
+    public GeneralResponseDto<?> getCourseList(String searching, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Course> pages = courseRepository.getCourseList(searching, pageable);
+        return new GeneralResponseDto<>(true, "ok", pages);
+    }
+
+    @Override
+    public GeneralResponseDto<?> edit(Long id, CourseRequestDto form) {
         try {
             Optional<Course> cOp = courseRepository.findById(id);
             if (cOp.isEmpty()) {
-                return new ResponseDto<>(false, "Course not found");
+                return new GeneralResponseDto<>(false, "Course not found");
             }
             Course course = cOp.get();
-            course.setName(form.getName());
-            course.setDuration(form.getDuration());
-            course.setDescription(form.getDescription());
-            course = courseRepository.save(course);
-            if (course.getId() == null) {
-                return new ResponseDto<>(false, "Bazaga saqalanmadi");
-            }
-            return new ResponseDto<>(true, "ok");
+            course.setName(form.name());
+            course.setDuration(form.duration());
+            course.setDescription(form.description());
+            courseRepository.save(course);
+            return new GeneralResponseDto<>(true, "ok");
         } catch (Exception e) {
             System.out.println("Course Service edit method: " + e.getMessage());
-            return new ResponseDto<>(false, e.getMessage());
+            return new GeneralResponseDto<>(false, e.getMessage());
         }
     }
 
     @Override
-    public ResponseDto<?> delete(Long id) {
+    public GeneralResponseDto<?> delete(Long id) {
         try {
             Optional<Course> course = courseRepository.findById(id);
             if (course.isEmpty()) {
-                return new ResponseDto<>(false, "Course topilmadi!!!");
+                return new GeneralResponseDto<>(false, "Course topilmadi!!!");
             }
             Optional<Long> count = courseRepository.countGroupsByCourseId(id);
             if (count.isPresent()) {
                 if (count.get() > 0) {
-                    return new ResponseDto<>(false, "Bu kursda guruhlar mavjud!!!");
+                    return new GeneralResponseDto<>(false, "Bu kursda guruhlar mavjud!!!");
                 }
             } else {
-                return new ResponseDto<>(false, "Count is not present");
+                return new GeneralResponseDto<>(false, "Count is not present");
             }
             courseRepository.deleteById(id);
-            return new ResponseDto<>(true, "O'chirildi");
+            return new GeneralResponseDto<>(true, "O'chirildi");
         } catch (Exception e) {
             System.out.println("Course Service delete method: " + e.getMessage());
-            return new ResponseDto<>(false, e.getMessage());
+            return new GeneralResponseDto<>(false, e.getMessage());
         }
     }
 
     @Override
-    public ResponseDto<?> findCoursesForSelect() {
-        return new ResponseDto<>(true, "ok", courseRepository.findCoursesForSelect());
-    }
-
-    @Override
-    public ResponseDto<?> getCourseList(String searching, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<Course> pages = courseRepository.getCourseList(searching, pageable);
-        List<Course> list = pages.getContent();
-        PageDataResponseDto<List<Course>> dto = new PageDataResponseDto<>(list, pages.getTotalElements());
-        return new ResponseDto<>(true, "ok", dto);
+    public GeneralResponseDto<?> findCoursesForSelect() {
+        return new GeneralResponseDto<>(true, "ok", courseRepository.findCoursesForSelect());
     }
 }

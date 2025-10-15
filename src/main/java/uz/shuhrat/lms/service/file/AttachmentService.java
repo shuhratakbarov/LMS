@@ -3,17 +3,17 @@ package uz.shuhrat.lms.service.file;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-import uz.shuhrat.lms.dto.ResponseDto;
+import uz.shuhrat.lms.dto.GeneralResponseDto;
 
 import java.util.UUID;
 
 public interface AttachmentService {
-    ResponseDto<?> findAll();
+    GeneralResponseDto<?> findAll();
 
-    ResponseEntity<ResponseDto<?>> uploadFile(MultipartFile file) throws Exception;
+    ResponseEntity<GeneralResponseDto<?>> uploadFile(MultipartFile file) throws Exception;
 
     ResponseEntity<ByteArrayResource> downloadFile(UUID fileId) throws Exception;
 
-    ResponseEntity<ResponseDto<?>> deleteFile(UUID fileId) throws Exception;
+    ResponseEntity<GeneralResponseDto<?>> deleteFile(UUID fileId) throws Exception;
 
 }

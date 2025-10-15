@@ -1,6 +1,5 @@
 package uz.shuhrat.lms.db.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,8 +8,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import uz.shuhrat.lms.annotation.ValidPassword;
+import uz.shuhrat.lms.enums.Role;
 
 import java.sql.Date;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
@@ -40,18 +42,19 @@ public class User implements UserDetails {
     private String phone;
     private String address;
     private Date birthDate;
-    /**
-     * admin user qo'shayotganda onChange da ushbu username tanlangan yoki yo'qligi haqida eslatib turish kerak
-     */
+  
     @Column(nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false)
+    @ValidPassword
     private String password;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "VARCHAR(20) CHECK (role IN ('STUDENT', 'TEACHER', 'ADMIN'))")
     private Role role;
+
+    private Instant lastSeen;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
@@ -59,6 +62,7 @@ public class User implements UserDetails {
 
     @UpdateTimestamp
     private Date updatedAt;
+
 
     @Builder.Default
     private boolean accountNonExpired = true;
@@ -71,7 +75,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(this.role.getName()));
+        return Collections.singletonList(new SimpleGrantedAuthority(this.role.getAuthority()));
     }
 
     @Override

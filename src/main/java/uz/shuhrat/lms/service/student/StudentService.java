@@ -1,12 +1,12 @@
 package uz.shuhrat.lms.service.student;
 
-import uz.shuhrat.lms.dto.ResponseDto;
+import uz.shuhrat.lms.dto.GeneralResponseDto;
 
 public interface StudentService {
 
-    ResponseDto<?> getHomeworksOfStudent(Long groupId, int page, int size);
+    GeneralResponseDto<?> getHomeworksOfStudent(Long groupId, int page, int size) throws Exception;
 
-    ResponseDto<?> getHomeworkCount();
+    GeneralResponseDto<?> getHomeworkNotification();
 
-    ResponseDto<?> getStudentGroupList(String keyword, int page, int size);
+    GeneralResponseDto<?> getStudentGroupList(String keyword, int page, int size) throws Exception;
 }
