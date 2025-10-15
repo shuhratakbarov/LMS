@@ -1,6 +1,7 @@
 package uz.shuhrat.lms.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -20,7 +21,8 @@ import java.util.Map;
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
-
+    @Value("${app.cors.allowed-origins[0]}")
+    private String frontendURL;
     private final StompHandshakeAuthInterceptor authInterceptor;
     private final StompChannelInterceptor stompChannelInterceptor;
 
@@ -34,7 +36,7 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("https://lms.shuhratakbarov.uz")
+                .setAllowedOriginPatterns(frontendURL)
                 .addInterceptors(authInterceptor)
                 .setHandshakeHandler(new DefaultHandshakeHandler() {
                     @Override
