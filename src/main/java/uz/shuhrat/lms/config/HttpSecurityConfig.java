@@ -3,6 +3,7 @@ package uz.shuhrat.lms.config;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,6 +33,8 @@ import java.util.List;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class HttpSecurityConfig {
+    @Value("${app.cors.allowed-origins[0]}")
+    private String frontendURL;
     private final JwtAuthFilter authFilter;
     private final UserRepository userRepository;
 
@@ -104,7 +107,7 @@ public class HttpSecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000"));
+        configuration.setAllowedOriginPatterns(List.of(frontendURL));
 //        configuration.setAllowedOriginPatterns(List.of("https://*.ngrok-free.app")); // wildcard ngrok
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));

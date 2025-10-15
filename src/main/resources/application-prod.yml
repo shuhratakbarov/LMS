@@ -50,12 +50,15 @@ jwt:
     expiration: 604800000
 
 app:
+  cors:
+    allowed-origins:
+      - ${FRONTEND_URL}
   file:
     storage:
       path: /var/lms/files
 
 password:
   reset:
-    link: https://shuhratakbarov.uz/reset-password
+    link: ${FRONTEND_URL}/reset-password
     token:
       expiration: 86400000
