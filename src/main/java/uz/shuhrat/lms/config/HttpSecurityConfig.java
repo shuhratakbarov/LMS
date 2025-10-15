@@ -61,18 +61,18 @@ public class HttpSecurityConfig {
                         "/ws/**",
                         "/websocket/**",
                         "/sockjs-node/**",
-                        "/info/**",              // Instead of "/info" + "/info/**"
-                        "/xhr/**",               // Remove "/**/xhr"
-                        "/xhr_streaming/**"  // Allow WebSocket connections
+                        "/info/**",
+                        "/xhr/**",
+                        "/xhr_streaming/**"
                 ).permitAll()
                 .requestMatchers("/user/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
                 .requestMatchers("/user-info").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
                 .requestMatchers("/download/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
                 .requestMatchers("/password/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
                 .requestMatchers("/conversation/**", "/conversation/*", "/conversation/*/message")
-                .hasAnyRole("ADMIN", "TEACHER", "STUDENT") // Add message endpoints
-                .requestMatchers("/messages/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT") // Add message endpoints
-                .requestMatchers("/groups/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT") // Add message endpoints
+                .hasAnyRole("ADMIN", "TEACHER", "STUDENT")
+                .requestMatchers("/messages/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
+                .requestMatchers("/groups/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
                 .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                 .requestMatchers("/teacher/**").hasAnyRole("TEACHER")
                 .requestMatchers("/student/**").hasAnyRole("STUDENT")
@@ -108,7 +108,6 @@ public class HttpSecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(List.of(frontendURL));
-//        configuration.setAllowedOriginPatterns(List.of("https://*.ngrok-free.app")); // wildcard ngrok
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
