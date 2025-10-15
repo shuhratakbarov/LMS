@@ -34,7 +34,7 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("http://localhost:3000")
+                .setAllowedOriginPatterns("https://lms.shuhratakbarov.uz")
                 .addInterceptors(authInterceptor)
                 .setHandshakeHandler(new DefaultHandshakeHandler() {
                     @Override
