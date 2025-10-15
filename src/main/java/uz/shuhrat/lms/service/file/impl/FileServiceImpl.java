@@ -122,10 +122,11 @@ public class FileServiceImpl implements FileService {
     private ResponseEntity<Resource> returnFile(String fileId) {
         Optional<File> fileOptional = fileRepository.findByPkey(fileId);
         if (fileOptional.isPresent()) {
-            Path filePath = Paths.get(this.filePath + "\\" + fileOptional.get().getPkey() + "-" + fileOptional.get().getName());
+            Path filePath = Paths.get(this.filePath, fileOptional.get().getPkey() + "-" + fileOptional.get().getName());
             Resource resource;
             String type;
             try {
+                System.out.println("Trying to read file: " + filePath);
                 resource = new UrlResource(filePath.toUri());
                 type = Files.probeContentType(filePath);
             } catch (Exception e) {
