@@ -40,3 +40,6 @@ build/
 ### OS files ###
 .DS_Store
 Thumbs.db
+
+### OCI ADB Wallet credentials
+ociwallet

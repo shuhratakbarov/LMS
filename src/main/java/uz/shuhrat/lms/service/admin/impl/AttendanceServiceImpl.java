@@ -3,10 +3,10 @@ package uz.shuhrat.lms.service.admin.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uz.shuhrat.lms.db.domain.Attendance;
+import uz.shuhrat.lms.db.domain.LessonAttendance;
 import uz.shuhrat.lms.db.domain.LessonInstance;
 import uz.shuhrat.lms.db.domain.User;
-import uz.shuhrat.lms.db.repository.AttendanceRepository;
+import uz.shuhrat.lms.db.repository.LessonAttendanceRepository;
 import uz.shuhrat.lms.db.repository.LessonInstanceRepository;
 import uz.shuhrat.lms.db.repository.admin.UserRepository;
 import uz.shuhrat.lms.dto.request.AttendanceRequestDto;
@@ -22,13 +22,13 @@ import java.util.stream.Collectors;
 
 @Service
 public class AttendanceServiceImpl implements AttendanceService {
-    private final AttendanceRepository attendanceRepository;
+    private final LessonAttendanceRepository lessonAttendanceRepository;
     private final LessonInstanceRepository lessonInstanceRepository;
     private final UserRepository userRepository;
 
     @Autowired
-    public AttendanceServiceImpl(AttendanceRepository attendanceRepository, LessonInstanceRepository lessonInstanceRepository, UserRepository userRepository) {
-        this.attendanceRepository = attendanceRepository;
+    public AttendanceServiceImpl(LessonAttendanceRepository lessonAttendanceRepository, LessonInstanceRepository lessonInstanceRepository, UserRepository userRepository) {
+        this.lessonAttendanceRepository = lessonAttendanceRepository;
         this.lessonInstanceRepository = lessonInstanceRepository;
         this.userRepository = userRepository;
     }
@@ -55,34 +55,34 @@ public class AttendanceServiceImpl implements AttendanceService {
         }
 
         // Step 2: Fetch existing attendance records in bulk
-        List<Attendance> existingAttendances = attendanceRepository.findByLessonInstanceIdAndStudentIds(
+        List<LessonAttendance> existingLessonAttendances = lessonAttendanceRepository.findByLessonInstanceIdAndStudentIds(
                 markAttendanceRequestDto.lessonInstanceId(), studentIds);
-        Map<UUID, Attendance> existingAttendanceMap = existingAttendances.stream()
+        Map<UUID, LessonAttendance> existingAttendanceMap = existingLessonAttendances.stream()
                 .collect(Collectors.toMap(att -> att.getStudent().getId(), att -> att));
 
-        // Step 3: Validate and prepare Attendance entities (update or create)
-        List<Attendance> attendancesToSave = new ArrayList<>();
+        // Step 3: Validate and prepare LessonAttendance entities (update or create)
+        List<LessonAttendance> attendancesToSave = new ArrayList<>();
         for (AttendanceRequestDto dto : attendanceRequestDtoList) {
             Boolean isPresent = dto.isPresent();
             Integer minutesLate = getMinutesLate(dto, isPresent);
 
-            Attendance attendance = existingAttendanceMap.getOrDefault(dto.studentId(), new Attendance());
-            attendance.setLessonInstance(lessonInstance);
-            attendance.setStudent(studentMap.get(dto.studentId()));
-            attendance.setIsPresent(isPresent);
-            attendance.setMinutesLate(minutesLate);
-            attendancesToSave.add(attendance);
+            LessonAttendance lessonAttendance = existingAttendanceMap.getOrDefault(dto.studentId(), new LessonAttendance());
+            lessonAttendance.setLessonInstance(lessonInstance);
+            lessonAttendance.setStudent(studentMap.get(dto.studentId()));
+            lessonAttendance.setIsPresent(isPresent);
+            lessonAttendance.setMinutesLate(minutesLate);
+            attendancesToSave.add(lessonAttendance);
         }
 
         // Step 4: Save all attendances (creates new or updates existing)
-        return new GeneralResponseDto<>(true, "ok", attendanceRepository.saveAll(attendancesToSave));
+        return new GeneralResponseDto<>(true, "ok", lessonAttendanceRepository.saveAll(attendancesToSave));
     }
 
     private static Integer getMinutesLate(AttendanceRequestDto dto, Boolean isPresent) throws Exception {
         int minutesLate = dto.minutesLate();
 
         if (isPresent == null) {
-            throw new Exception("Attendance status (is_present) must be specified for student " + dto.studentId());
+            throw new Exception("LessonAttendance status (is_present) must be specified for student " + dto.studentId());
         }
         if (minutesLate < 0) {
             throw new Exception("Minutes late cannot be negative for student " + dto.studentId());
@@ -94,7 +94,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     public GeneralResponseDto<?> getAttendanceByLessonInstance(Long lessonInstanceId) {
-        return new GeneralResponseDto<>(true, "ok", attendanceRepository.findAll().stream()
+        return new GeneralResponseDto<>(true, "ok", lessonAttendanceRepository.findAll().stream()
                 .filter(att -> att.getLessonInstance().getId().equals(lessonInstanceId))
                 .toList());
     }

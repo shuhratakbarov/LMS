@@ -63,3 +63,21 @@ password:
     link: ${FRONTEND_URL}/reset-password
     token:
       expiration: 86400000
+
+
+#spring:
+#  datasource:
+#    driver-class-name: oracle.jdbc.OracleDriver
+#    url: jdbc:oracle:thin:@${DB_NAME}_high?TNS_ADMIN=${OCI_WALLET_PATH}
+#    username: ${DB_USER}
+#    password: ${DB_PASS}
+#    hikari:
+#      maxLifetime: 1800000      # 30 minutes (Oracle closes after 30m)
+#      idleTimeout: 300000       # 5 minutes
+#      validationTimeout: 5000   # 5 seconds
+#      connectionTimeout: 30000  # 30 seconds
+#      minimumIdle: 5
+#      maximumPoolSize: 10
+#    tomcat:
+#      test-while-idle: true
+#      validation-query: SELECT 1 FROM DUAL

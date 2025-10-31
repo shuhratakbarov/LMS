@@ -91,6 +91,14 @@ public interface StudentRoleRepository extends JpaRepository<Homework, UUID> {
                     """)
     CourseGroupCountProjection getStudentCourseAndGroupCount(@Param("studentId") UUID studentId);
 
+    @Query(nativeQuery = true,
+            value = """
+                    select distinct course_id from groups where id in
+                    (select group_id from group_student where student_id=:studentId);
+                    """
+    )
+    List<Long> getCourseIdsOfStudent(@Param("studentId") UUID studentId);
+
 //    @Query(nativeQuery = true,
 //            value = "select count(*) from (select * from tasks " +
 //                    " where group_id in (select distinct group_id from group_student where student_id=:studentId)) t " +
