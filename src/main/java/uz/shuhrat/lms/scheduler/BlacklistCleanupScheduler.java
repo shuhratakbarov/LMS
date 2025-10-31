@@ -1,7 +1,6 @@
-package uz.shuhrat.lms.service.scheduler;
+package uz.shuhrat.lms.scheduler;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import uz.shuhrat.lms.db.repository.admin.TokenBlacklistRepository;
@@ -10,7 +9,7 @@ import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
-public class BlacklistCleanup {
+public class BlacklistCleanupScheduler {
     private final TokenBlacklistRepository blacklistRepository;
 
     // Runs every day at 2 AM

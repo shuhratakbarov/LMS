@@ -1,3 +1,13 @@
 spring:
   profiles:
     active: dev
+  ai:
+    azure:
+      openai:
+        endpoint:
+        api-key: ${AZURE_OPENAI_API_KEY}
+        chat:
+          options:
+            deployment-name:
+            model: gpt-5-mini
+            api-version: 2025-01-01-preview

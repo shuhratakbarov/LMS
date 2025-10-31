@@ -11,6 +11,7 @@ import uz.shuhrat.lms.projection.CourseGroupCountProjection;
 import uz.shuhrat.lms.projection.TeacherGroupSummaryProjection;
 import uz.shuhrat.lms.projection.TeacherHomeworkListProjection;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -76,4 +77,7 @@ public interface TeacherRepository extends JpaRepository<Group, Long> {
                     GROUP BY g.teacher_id;
                     """)
     CourseGroupCountProjection getTeacherCourseAndGroupCount(@Param("teacherId") UUID teacherId);
+
+    @Query(value = "SELECT new map(c.id as id, c.name as name) FROM Course c where c.id in (select course.id from Group where teacher.id=:teacherId)")
+    List<Map<String, Object>> findCoursesForSelect(@Param("teacherId") UUID teacherId);
 }

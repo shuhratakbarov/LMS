@@ -92,4 +92,10 @@ public class TeacherServiceImpl implements TeacherService {
             return new GeneralResponseDto<>(false, e.getMessage());
         }
     }
+
+    @Override
+    public GeneralResponseDto<?> findCoursesForSelect() {
+        return new GeneralResponseDto<>(true, "ok", teacherRepository.findCoursesForSelect(SecurityHelper.getCurrentUser().getId()));
+    }
+
 }

@@ -11,4 +11,6 @@ public interface TeacherService {
     GeneralResponseDto<?> getHomeworkList(Long groupId, String taskId, int page, int size) throws Exception;
 
     GeneralResponseDto<?> evaluateHomework(UUID homeworkId, EvaluateHomeworkRequestDto homework);
+
+    GeneralResponseDto<?> findCoursesForSelect();
 }

@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.shuhrat.lms.db.domain.Group;
 import uz.shuhrat.lms.db.domain.LessonSchedule;
 import uz.shuhrat.lms.db.domain.User;
-import uz.shuhrat.lms.db.repository.AttendanceRepository;
+import uz.shuhrat.lms.db.repository.LessonAttendanceRepository;
 import uz.shuhrat.lms.db.repository.LessonInstanceRepository;
 import uz.shuhrat.lms.db.repository.LessonScheduleRepository;
 import uz.shuhrat.lms.db.repository.RoomRepository;
@@ -33,16 +33,16 @@ public class LessonScheduleServiceImpl implements LessonScheduleService {
     private final LessonInstanceRepository lessonInstanceRepository;
     private final GroupRepository groupRepository;
     private final RoomRepository roomRepository;
-    private final AttendanceRepository attendanceRepository;
+    private final LessonAttendanceRepository lessonAttendanceRepository;
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public LessonScheduleServiceImpl(LessonScheduleRepository lessonScheduleRepository, LessonInstanceRepository lessonInstanceRepository, GroupRepository groupRepository, RoomRepository roomRepository, AttendanceRepository attendanceRepository, JdbcTemplate jdbcTemplate) {
+    public LessonScheduleServiceImpl(LessonScheduleRepository lessonScheduleRepository, LessonInstanceRepository lessonInstanceRepository, GroupRepository groupRepository, RoomRepository roomRepository, LessonAttendanceRepository lessonAttendanceRepository, JdbcTemplate jdbcTemplate) {
         this.lessonScheduleRepository = lessonScheduleRepository;
         this.lessonInstanceRepository = lessonInstanceRepository;
         this.groupRepository = groupRepository;
         this.roomRepository = roomRepository;
-        this.attendanceRepository = attendanceRepository;
+        this.lessonAttendanceRepository = lessonAttendanceRepository;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -118,7 +118,7 @@ public class LessonScheduleServiceImpl implements LessonScheduleService {
         schedule.setRoom(roomRepository.findById(lessonScheduleDTO.roomId())
                 .orElseThrow(() -> new RuntimeException("Room not found")));
 
-//        LocalDate lastLessonDate = attendanceRepository.findTopLessonInstanceByLessonScheduleOrderByLessonDateDesc(schedule)
+//        LocalDate lastLessonDate = lessonAttendanceRepository.findTopLessonInstanceByLessonScheduleOrderByLessonDateDesc(schedule)
 //                .map(LessonInstance::getLessonDate)
 //                .orElse(LocalDate.MIN);
 //
